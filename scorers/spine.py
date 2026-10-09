@@ -46,11 +46,11 @@ def _contains(text, term):
 
 
 def _negated(text, term):
-    """True if every mention of `term` sits within a few words after a negation."""
-    mentions = [m for a in _aliases(term) for m in re.finditer(_pattern(a), text)]
-    neg = re.compile(_NEGATION + r"\W+(?:\w+\W+){0,3}?" + r"(?:" + "|".join(_pattern(a) for a in _aliases(term)) + ")")
-    negated_spans = [m.span() for m in neg.finditer(text)]
-    return bool(mentions) and all(any(s <= m.start() and m.end() <= e for s, e in negated_spans) for m in mentions)
+    """True if `term` is explicitly rejected anywhere: "not X", "isn't X", "X is not", "X isn't"."""
+    alts = "(?:" + "|".join(_pattern(a) for a in _aliases(term)) + ")"
+    before = _NEGATION + r"\W+(?:\w+\W+){0,3}?" + alts
+    after = alts + r"\s+(?:is|was|are)(?:\s+not|n't)\b"
+    return bool(re.search(before, text) or re.search(after, text))
 
 
 def _user_turns(history):
