@@ -66,7 +66,7 @@ Direct invocation:
 python run_dialogue.py --suite suite/example_smoke.jsonl --model Qwen/Qwen2.5-1.5B-Instruct --limit 5 --out artifacts/smoke
 ```
 
-See `REPORT.md` for the Day 1 results and handoff notes.
+See `REPORT.md` for the Day 1 results and handoff notes, and [`DAY1.md`](DAY1.md) for the short Day 1 lab note.
 
 ## License
 
