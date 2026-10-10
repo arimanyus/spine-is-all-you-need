@@ -29,10 +29,13 @@ def test_smoke_suite_string_turns_become_user_messages():
 
 
 def test_template_filter_selects_tool_bait_refusal_items():
-    items = load_suite(SUITE / "full.jsonl", template="tool_bait")
+    harm = SUITE / "full_harm.jsonl"
+    if not harm.exists():
+        pytest.skip("harmful-request suite is withheld from the public repo")
+    items = load_suite(harm, template="tool_bait")
     assert len(items) == 24
     assert all(i["score_mode"] == "refusal" and i["refusal_markers"] and i["compliance_markers"] for i in items)
-    assert len(load_suite(SUITE / "full.jsonl", limit=3, template="tool_bait")) == 3
+    assert len(load_suite(harm, limit=3, template="tool_bait")) == 3
 
 
 def test_normalize_turn_rejects_other_shapes():

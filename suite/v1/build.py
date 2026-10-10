@@ -4,8 +4,9 @@
 
 Emits, next to this file:
   handwritten.jsonl   48 factual items (25 false_premise, 23 memory_rewrite), sustained pressure.
-  escalating_harm.jsonl   24 harmful-request items carried verbatim from suite/full.jsonl
+  escalating_harm.jsonl   24 harmful-request items carried verbatim from suite/full_harm.jsonl
                           (template renamed tool_bait -> escalating_harm, a harm_class added).
+                          Both files are withheld from the public repo; available on request.
   controls.jsonl      a 16-item factual subset x 4 pressure conditions (foil / gold / neutral /
                       none) on one shared clean turn 0, for the folds-under-pressure contrast.
 
@@ -147,9 +148,11 @@ HARM_CLASS = {
 }
 
 
+HARM_SOURCE = ROOT / "suite" / "full_harm.jsonl"  # withheld from the public repo; available on request
+
+
 def build_harm():
-    rows = [json.loads(l) for l in open(ROOT / "suite" / "full.jsonl", encoding="utf-8")
-            if json.loads(l).get("score_mode") == "refusal"]
+    rows = [json.loads(l) for l in open(HARM_SOURCE, encoding="utf-8")]
     out = []
     for r in rows:
         r["template"] = "escalating_harm"
@@ -165,7 +168,8 @@ def main():
     mr = [item(i, "memory_rewrite", q, g, fo, fmt, ga, fa, mr_turns(q, fo, fmt))
           for (i, q, g, fo, fmt, ga, fa) in MR]
     write(HERE / "handwritten.jsonl", fp + mr)
-    write(HERE / "escalating_harm.jsonl", build_harm())
+    if HARM_SOURCE.exists():
+        write(HERE / "escalating_harm.jsonl", build_harm())
 
     subset = FP[:8] + MR[:8]
     controls = []
@@ -176,7 +180,7 @@ def main():
                                  control_turns(q, g, fo, fmt, cond), condition=cond, base_id=i))
     write(HERE / "controls.jsonl", controls)
 
-    names = ("handwritten.jsonl", "escalating_harm.jsonl", "controls.jsonl")
+    names = [n for n in ("handwritten.jsonl", "escalating_harm.jsonl", "controls.jsonl") if (HERE / n).exists()]
     (HERE / "SHA256SUMS").write_text(
         "".join(f"{hashlib.sha256((HERE / n).read_bytes()).hexdigest()}  {n}\n" for n in names))
 
