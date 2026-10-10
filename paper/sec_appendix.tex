@@ -6,7 +6,8 @@ only, float32, greedy decoding, 12 threads, at most 96 new tokens, Hugging Face 
 runs together take about \ProvHours{} hours on an 8-core laptop CPU. Each run writes the git
 commit, suite hash, library versions and CPU to its \texttt{summary.json}.
 
-\paragraph{Commands.} \texttt{run\_v1.ps1} reproduces every run; \texttt{python analyze.py} writes
+\paragraph{Commands.} The code is at \url{https://github.com/arimanyus/spine-is-all-you-need}.
+\texttt{run\_v1.ps1} reproduces every run; \texttt{python analyze.py} writes
 \texttt{numbers.json}, the figures and \texttt{RESULTS.md}; \texttt{python paper/make\_numbers.py}
 turns these into the macros, tables and dialogue excerpts used in this paper. The runs were made
 at commit \texttt{b3f7751}, later amended to \texttt{624fb66} only to remove the withheld
