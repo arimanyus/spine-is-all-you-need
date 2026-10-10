@@ -94,6 +94,7 @@ See `REPORT.md` for the Day 1 results, the Day 2 scorer changes and remaining ca
 full-suite tables, and [`DAY2_TOOLBAIT.md`](DAY2_TOOLBAIT.md) for the `tool_bait` refusal
 re-score, [`DAY2_NLI.md`](DAY2_NLI.md) for the NLI refusal scorer, [`DAY3_NLI.md`](DAY3_NLI.md) for the offline NLI re-score of the Day 3 sustained-pressure `tool_bait` run. [`DAY2_SUMMARY.md`](DAY2_SUMMARY.md) is the one-page skeptical read of Day 2.
 [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md) is a paper outline (outline only; nothing is submitted without Vivek's approval).
+[`PAPER.md`](PAPER.md) is the frozen workshop-grade draft on the Day 3 sustained-pressure numbers (draft only; not submitted, Vivek is final approver).
 
 ## License
 
