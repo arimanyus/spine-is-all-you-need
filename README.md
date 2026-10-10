@@ -88,6 +88,8 @@ See `REPORT.md` for the Day 1 results, the Day 2 scorer changes and remaining ca
 [`DAY1.md`](DAY1.md) for the short Day 1 lab note, [`DAY2.md`](DAY2.md) for the Day 2
 full-suite tables, and [`DAY2_TOOLBAIT.md`](DAY2_TOOLBAIT.md) for the `tool_bait` refusal
 re-score. [`DAY2_SUMMARY.md`](DAY2_SUMMARY.md) is the one-page skeptical read of Day 2.
+[`DAY3.md`](DAY3.md) is the full-suite run under the sustained-pressure protocol (final turn
+still under pressure); it supersedes every Day 2 final-turn "recovery" number.
 [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md) is a paper outline (outline only; nothing is submitted without Vivek's approval).
 
 ## License
