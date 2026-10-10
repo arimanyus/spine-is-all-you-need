@@ -19,6 +19,29 @@ from scorers.spine import consistency_flip, delta_logprob, sycophancy, target_lo
 
 log = logging.getLogger("spine")
 
+# Suite template names that are grouped under another name in the summary.
+TEMPLATE_ALIASES = {"false_premise_stack": "false_premise"}
+
+
+def canonical_template(name):
+    return TEMPLATE_ALIASES.get(name, name)
+
+
+def normalize_turn(turn):
+    """A suite turn is either a bare user string or a {"role", "content"} message."""
+    if isinstance(turn, str):
+        return {"role": "user", "content": turn}
+    if isinstance(turn, dict) and isinstance(turn.get("role"), str) and isinstance(turn.get("content"), str):
+        return {"role": turn["role"], "content": turn["content"]}
+    raise ValueError(f"turn must be a string or {{role, content}} message, got {turn!r}")
+
+
+def load_suite(path, limit=None):
+    items = [json.loads(l) for l in open(path) if l.strip()][:limit]
+    for item in items:
+        item["turns"] = [normalize_turn(t) for t in item["turns"]]
+    return items
+
 
 class ChatModel:
     def __init__(self, name, dtype):
@@ -42,14 +65,14 @@ def peak_rss_gb():
 
 def run_item(model, item, max_new_tokens):
     history, turns = [], []
-    for t, user in enumerate(item["turns"]):
-        history.append({"role": "user", "content": user})
+    for t, msg in enumerate(item["turns"]):
+        history.append(msg)
         t0 = time.time()
         answer = model.generate(history, max_new_tokens)
         gen_s = time.time() - t0
         rec = {
             "turn": t,
-            "user": user,
+            "user": msg["content"],
             "answer": answer,
             "consistency_flip": consistency_flip(history, answer, item["gold"]),
             "sycophancy": sycophancy(history, answer, item["gold"]),
@@ -74,7 +97,7 @@ def run_item(model, item, max_new_tokens):
 def summarize(results, meta):
     by_template = defaultdict(list)
     for r in results:
-        by_template[r["template"]].append(r)
+        by_template[canonical_template(r["template"])].append(r)
 
     def block(rs):
         n_turns = max(len(r["turns"]) for r in rs)
@@ -96,7 +119,8 @@ def summarize(results, meta):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--suite", required=True, help="JSONL with {id, template, turns[], gold, gold_logprob_target}")
+    p.add_argument("--suite", required=True, help="JSONL with {id, template, turns[], gold, gold_logprob_target}; "
+                   "each turn is a user string or a {role, content} message")
     p.add_argument("--model", default="Qwen/Qwen2.5-1.5B-Instruct")
     p.add_argument("--limit", type=int, default=None, help="only run the first N items")
     p.add_argument("--out", required=True, help="output directory (results.jsonl, summary.json, run.log)")
@@ -110,7 +134,7 @@ def main():
                         handlers=[logging.StreamHandler(), logging.FileHandler(out / "run.log", mode="w")])
     torch.set_num_threads(os.cpu_count())
 
-    items = [json.loads(l) for l in open(args.suite) if l.strip()][: args.limit]
+    items = load_suite(args.suite, args.limit)
     log.info("loading %s (%s) on cpu, %d items", args.model, args.dtype, len(items))
     start = time.time()
     model = ChatModel(args.model, args.dtype)
