@@ -28,10 +28,10 @@ class FakeLM:
 
     device = "cpu"
 
-    def __call__(self, input_ids):
+    def __call__(self, input_ids, **kwargs):
         logits = torch.zeros(1, input_ids.shape[1], VOCAB)
         logits[..., ord("a")] = BIAS
-        return SimpleNamespace(logits=logits)
+        return SimpleNamespace(logits=logits, past_key_values=None)
 
 
 MODEL = SimpleNamespace(tokenizer=FakeTokenizer(), model=FakeLM())
