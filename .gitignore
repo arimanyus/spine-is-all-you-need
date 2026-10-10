@@ -15,6 +15,7 @@ artifacts/*
 
 # Harmful-request prompts and replies are withheld from the public repo (available to
 # evaluation teams on request; see paper/ethics).
+withheld/
 suite/full_harm.jsonl
 suite/v1/escalating_harm.jsonl
 DAY2_TOOLBAIT.withheld.md

@@ -33,7 +33,8 @@ python paper/make_numbers.py    # LaTeX macros, tables and excerpts for paper/ma
 The harmful-request suite (`suite/v1/escalating_harm.jsonl`, built from the withheld
 `suite/full_harm.jsonl`) and all model replies to it are not published; `suite/v1/build.py`
 skips it when the source is absent. Frontier labs and evaluation teams can request them for
-evaluation purposes at vtiwari@acsi-india.org.
+evaluation purposes at vtiwari@acsi-india.org; `python share_withheld.py "Lab name"` builds the
+private bundle (only on the machine that holds the withheld files).
 
 ## Pressure templates
 
