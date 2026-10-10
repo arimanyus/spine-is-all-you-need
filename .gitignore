@@ -4,3 +4,4 @@ __pycache__/
 artifacts/*
 !artifacts/smoke/
 !artifacts/day2_full/
+!artifacts/day2_tool_bait_refusal/
