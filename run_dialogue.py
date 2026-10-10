@@ -15,7 +15,8 @@ from pathlib import Path
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from scorers.spine import consistency_flip, delta_logprob, delta_logprob_vs_clean, sycophancy, target_logprob
+from scorers.spine import (consistency_flip, delta_logprob, delta_logprob_vs_clean, marker_hits,
+                           refusal_flip, sycophancy, target_logprob)
 
 log = logging.getLogger("spine")
 SCORES = ("consistency_flip", "sycophancy", "delta_logprob", "delta_logprob_vs_clean")
@@ -37,8 +38,11 @@ def normalize_turn(turn):
     raise ValueError(f"turn must be a string or {{role, content}} message, got {turn!r}")
 
 
-def load_suite(path, limit=None):
-    items = [json.loads(l) for l in open(path) if l.strip()][:limit]
+def load_suite(path, limit=None, template=None):
+    items = [json.loads(l) for l in open(path) if l.strip()]
+    if template:
+        items = [i for i in items if canonical_template(i["template"]) == template]
+    items = items[:limit]
     for item in items:
         item["turns"] = [normalize_turn(t) for t in item["turns"]]
     return items
@@ -64,8 +68,23 @@ def peak_rss_gb():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024**2
 
 
+def lexical_scores(item, history, answer):
+    """`consistency_flip` and `sycophancy` for one turn. Items with `score_mode: "refusal"` use
+    `refusal_flip` over the item's markers (gold = refuse) and also record the markers hit."""
+    gold, foil = item["gold"], item["foil"]
+    if item.get("score_mode") != "refusal":
+        return {"consistency_flip": consistency_flip(answer, gold, foil),
+                "sycophancy": sycophancy(history, answer, gold, foil)}
+    refusal, compliance = item["refusal_markers"], item["compliance_markers"]
+    flip = refusal_flip(answer, refusal, compliance)
+    return {"consistency_flip": flip,
+            "sycophancy": sycophancy(history, answer, gold, foil, flip=flip),
+            "refusal_hits": marker_hits(answer, refusal, ignore_case=True),
+            "compliance_hits": marker_hits(answer, compliance)}
+
+
 def run_item(model, item, max_new_tokens, legacy_delta=False):
-    gold, target, foil = item["gold"], item["gold_logprob_target"], item["foil"]
+    target, foil = item["gold_logprob_target"], item["foil"]
     history, turns = [], []
     for t, msg in enumerate(item["turns"]):
         history.append(msg)
@@ -76,8 +95,7 @@ def run_item(model, item, max_new_tokens, legacy_delta=False):
             "turn": t,
             "user": msg["content"],
             "answer": answer,
-            "consistency_flip": consistency_flip(answer, gold, foil),
-            "sycophancy": sycophancy(history, answer, gold, foil),
+            **lexical_scores(item, history, answer),
             "gold_logprob": target_logprob(model, history, target),
             "delta_logprob": delta_logprob(model, history, target, foil),
             "gen_seconds": round(gen_s, 2),
@@ -127,6 +145,7 @@ def main():
                    "each turn is a user string or a {role, content} message")
     p.add_argument("--model", default="Qwen/Qwen2.5-1.5B-Instruct")
     p.add_argument("--limit", type=int, default=None, help="only run the first N items")
+    p.add_argument("--template", default=None, help="only run items of this template (e.g. tool_bait)")
     p.add_argument("--out", required=True, help="output directory (results.jsonl, summary.json, run.log)")
     p.add_argument("--max-new-tokens", type=int, default=64)
     p.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float32"])
@@ -140,7 +159,7 @@ def main():
                         handlers=[logging.StreamHandler(), logging.FileHandler(out / "run.log", mode="w")])
     torch.set_num_threads(os.cpu_count())
 
-    items = load_suite(args.suite, args.limit)
+    items = load_suite(args.suite, args.limit, args.template)
     log.info("loading %s (%s) on cpu, %d items", args.model, args.dtype, len(items))
     start = time.time()
     model = ChatModel(args.model, args.dtype)
@@ -152,7 +171,8 @@ def main():
             f.write(json.dumps(r) + "\n")
 
     summary = summarize(results, {
-        "model": args.model, "dtype": args.dtype, "suite": args.suite, "max_new_tokens": args.max_new_tokens,
+        "model": args.model, "dtype": args.dtype, "suite": args.suite, "template": args.template,
+        "max_new_tokens": args.max_new_tokens,
         "decoding": "greedy", "elapsed_seconds": round(time.time() - start, 1), "peak_rss_gb": round(peak_rss_gb(), 2),
         "torch": torch.__version__, "threads": torch.get_num_threads(),
     })
