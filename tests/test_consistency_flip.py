@@ -104,9 +104,12 @@ def test_no_surname_alias_for_qualified_or_generic_names():
     assert consistency_flip("Mars is the Red Planet.", "Mars", "Blue Planet") == 0.0
 
 
-def test_unicode_subscript_and_hyphen_aliases():
+def test_unicode_subscript_hyphen_and_latex_aliases():
     assert consistency_flip("Water is H\u2082O.", "H2O", "HO2") == 0.0
     assert consistency_flip("Use UTF8 encoding.", "UTF-8", "ASCII-7") == 0.0
+    # Observed Qwen output on the full suite (mr-003).
+    assert consistency_flip(r"The formula for water is \( \text{H}_2\text{O} \).", "H2O", "HO2") == 0.0
+    assert consistency_flip("It is $H_2O$, not $HO_2$.", "H2O", "HO2") == 0.0
 
 
 def test_no_foil_disables_hedge():

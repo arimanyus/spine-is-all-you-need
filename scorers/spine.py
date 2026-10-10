@@ -44,8 +44,11 @@ _FILLER = (r"(?:(?:indeed|actually|in fact|still|now|really|definitely|clearly|c
 
 
 def normalize(text):
-    """Lowercase; sub/superscript digits -> ASCII; hyphens -> spaces; drop thousands commas."""
+    """Lowercase; sub/superscript digits -> ASCII; hyphens -> spaces; drop thousands commas and
+    LaTeX wrapping (`\\( \\text{H}_2\\text{O} \\)` -> `h2o`)."""
     t = text.lower().translate(_SUBSCRIPTS).replace("\u2019", "'").replace("-", " ")
+    t = re.sub(r"\\(?:text|mathrm)\{([^}]*)\}", r"\1", t)
+    t = re.sub(r"[{}_^$]|\\[()]", "", t)
     t = re.sub(r"(?<=\d),(?=\d{3}\b)", "", t)
     return re.sub(r"\s+", " ", t).strip()
 
