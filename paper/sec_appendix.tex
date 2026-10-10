@@ -1,0 +1,63 @@
+\section{Reproducibility}
+\label{app:repro}
+
+\paragraph{Environment.} Python \ProvPython, PyTorch \ProvTorch, Transformers \ProvTransformers, CPU
+only, float32, greedy decoding, 12 threads, at most 96 new tokens, Hugging Face Hub offline. All
+runs together take about \ProvHours{} hours on an 8-core laptop CPU. Each run writes the git
+commit, suite hash, library versions and CPU to its \texttt{summary.json}.
+
+\paragraph{Commands.} \texttt{run\_v1.ps1} reproduces every run; \texttt{python analyze.py} writes
+\texttt{numbers.json}, the figures and \texttt{RESULTS.md}; \texttt{python paper/make\_numbers.py}
+turns these into the macros, tables and dialogue excerpts used in this paper. The runs were made
+at commit \texttt{b3f7751}, later amended to \texttt{624fb66} only to remove the withheld
+harmful-request files from version control; the code is identical.
+
+\paragraph{Alias corrections after the runs.} Reading the replies labelled \lab{other}, we found
+three alias gaps: \texttt{mr-004} (``African'' for \emph{Africa}, ``Asian'' for \emph{Asia}),
+\texttt{mr-006} (a bare ``0'' or ``10'') and \texttt{mr-010} (``Lung'' for \emph{Lungs}). We fixed
+the alias lists in the suite generator. Prompts and scoring targets are unchanged, so the runs did
+not need repeating; \texttt{analyze.py} re-labels every factual cell with the current aliases and
+logs each change. \Rn{} cells changed, all from \lab{other} (15 to \lab{hold}, 1 to \lab{fold}).
+
+\begin{table}[!htb]
+\centering\small
+\caption{SHA-256 of the suites and model weights.}
+\label{tab:hashes}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll@{}}
+\toprule
+file & SHA-256 \\
+\midrule
+\texttt{handwritten.jsonl} (frozen, current) & \texttt{\footnotesize af848bbe240021f940c693828e31655fe491c14bc3eb9d76cec6955d55eea3fa} \\
+\texttt{handwritten.jsonl} (as run)          & \texttt{\footnotesize a967d3244c29a040ad0a36fd51f98180f9e7101e8dc9da45bedc8acaf8c65425} \\
+\texttt{controls.jsonl} (frozen, current)    & \texttt{\footnotesize 4bf5e222a306c6c55974a2054c90dffacc19f6c3a2b52843b48ad7ed1d6bc3d5} \\
+\texttt{controls.jsonl} (as run)             & \texttt{\footnotesize ded2061647e7bb26d10beb35436fa9cb4872f6652ce7f0214a000910fbb9bcd0} \\
+\texttt{escalating\_harm.jsonl} (withheld)   & \texttt{\footnotesize ad326423c731370e8bbf2f44b17fce7dd13abcd01ff017177ffe23f1e0f70aa2} \\
+\midrule
+Qwen2.5-1.5B-Instruct \texttt{989aa79}       & \texttt{\footnotesize dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee} \\
+DeBERTa-v3-base-mnli-fever-anli \texttt{6f5cf0a} & \texttt{\footnotesize 06d6fd89edd4f97816831626daafbdb0b029cf63bae8edc0bccab1d64e2e7707} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Pilot runs}
+\label{app:pilot}
+
+Before the v1 suite we ran a pilot on the repository's earlier 72-item suite (bfloat16, 64 new
+tokens, 4 threads, no brevity instruction, and a scorer whose negation scope crossed sentence
+boundaries and that scored non-answers as folds). The pilot is not comparable with v1, and we list
+it only for transparency. Its headline differs most for \texttt{false\_premise}: 21/25 items held at
+the final turn, against \FPfinal{} in v1. The pilot's false-premise turns asserted loosely related
+false statements (``Paris is the capital of Germany, not France''; ``So the Eiffel Tower is in
+Berlin, right?'') rather than one wrong answer to the same question, and its final turn re-asked
+the question on top of such a statement without naming a wrong answer to it. The v1 templates push one specific foil at every turn,
+including the last, which is the condition this paper sets out to measure. The pilot's
+\texttt{memory\_rewrite} (16/23 held at the end; v1: \MRfinal) and harmful-request results (13/24;
+v1: \Hfinal) are closer, but they also differ in precision, token budget, system prompt and scorer.
+
+\section{Access to the harmful-request suite}
+\label{app:access}
+
+The withheld material (the 24 harmful-request dialogues with their compliance markers and harm
+classes, the model's replies in all runs, and their annotation sheet) is available to frontier labs
+and evaluation teams on request to \href{mailto:vtiwari@acsi-india.org}{\texttt{vtiwari@acsi-india.org}}.

@@ -1,4 +1,4 @@
-# Reproduce every v1 run (fp32, greedy, 12 threads, 96 new tokens). ~2 h on an 8-core laptop CPU.
+# Reproduce every v1 run (fp32, greedy, 12 threads, 96 new tokens). ~3 h on an 8-core laptop CPU.
 $env:HF_HUB_OFFLINE = '1'
 $env:PYTHONIOENCODING = 'utf-8'
 $py = '.\.venv\Scripts\python.exe'

@@ -1,0 +1,110 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{libertinus}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[skins,breakable]{tcolorbox}
+\usepackage{titlesec}
+\usepackage[font=small,labelfont={bf,sf},labelsep=period]{caption}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+
+% Palette shared with the figures (analyze.py).
+\definecolor{ink}{HTML}{1B2A41}
+\definecolor{accent}{HTML}{C0392B}
+\definecolor{labhold}{HTML}{2E7D32}
+\definecolor{labhedge}{HTML}{B7791F}
+\definecolor{labfold}{HTML}{C62828}
+\definecolor{labother}{HTML}{6B7780}
+
+\hypersetup{colorlinks, linkcolor=ink, citecolor=accent!85!black, urlcolor=ink}
+\titleformat{\section}{\sffamily\Large\bfseries\color{ink}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\sffamily\large\bfseries\color{ink}}{\thesubsection}{0.6em}{}
+\titleformat{\paragraph}[runin]{\sffamily\bfseries\color{ink}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{1.6ex plus .4ex}{0.8ex}
+\titlespacing*{\subsection}{0pt}{1.3ex plus .3ex}{0.5ex}
+\setlist{itemsep=1pt, topsep=3pt}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.75}
+
+\newtcolorbox{findings}{enhanced, breakable, colback=ink!3, colframe=ink!70, boxrule=0.5pt,
+  leftrule=3pt, arc=1.5pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  title={\sffamily\bfseries Key findings}, coltitle=ink, colbacktitle=ink!3, attach title to upper={\par\smallskip}}
+\newtcolorbox{dialogue}[1]{enhanced, colback=white, colframe=black!18, boxrule=0.4pt, arc=2pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, title={\sffamily\bfseries\small #1}, coltitle=ink,
+  colbacktitle=black!4, toptitle=1pt, bottomtitle=1pt}
+\newcommand{\usr}[2]{\par\noindent{\sffamily\scriptsize\color{black!55}USER\,\textperiodcentered\,turn #1}\\[-1pt]{\footnotesize #2}\par\smallskip}
+\newcommand{\asst}[2]{\par\noindent\colorbox{lab#1!9}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+  {\sffamily\scriptsize\bfseries\color{lab#1}MODEL\,\textperiodcentered\,\MakeUppercase{#1}}\\[-1pt]{\footnotesize #2}}}\par\smallskip}
+\newcommand{\lab}[1]{{\sffamily\small\bfseries\color{lab#1}#1}}
+\makeatletter\newcommand{\rows}[1]{\@@input #1 }\makeatother % table rows; \input breaks \bottomrule
+
+\input{numbers.tex}
+
+\title{\sffamily\bfseries\color{ink} Measuring Spine: Does a Small Instruct Model Keep\\ a Correct Answer Under Sustained Multi-Turn Pressure?}
+\author{\textbf{Vivek K Tiwari}\\
+American Chemical Society International-India\\
+\href{mailto:vtiwari@acsi-india.org}{\texttt{vtiwari@acsi-india.org}}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent A model that answers a question correctly once may not keep that answer when the conversation
+pushes back. We measure this \emph{spine} in \texttt{Qwen2.5-1.5B-Instruct}, run deterministically on
+a laptop CPU, over 48 factual dialogues in which every turn after the first pushes a specific wrong
+answer, and 24 dialogues in which a harmful request is followed by four turns of escalating excuses.
+The model answers \ALLzero{} factual questions correctly at turn~0 but holds only \ALLfinal{} at the
+final turn. Pressure from an outside authority (``my textbook says~$X$'') is far more effective than a
+claim about the model's own past (``you said~$X$ earlier''): at turn~3, \FPthree{} versus \MRthree{}
+items hold. A matched control design shows that the folds are caused by \emph{naming a wrong
+answer}, not by pushback as such: on \Cn{} questions with identical first and last turns,
+\Cfoilpeak{} hold at peak pressure when the user asserts the wrong answer, against \Cgoldpeak{}
+when parallel wording asserts the correct answer, \Cneutralpeak{} under a neutral ``are you
+sure?'', and \Cnonepeak{} when the question is simply asked again (exact McNemar
+$p \le \Cpneutralpeak$). Much of the damage is momentary: once the wrong answer stops being
+repeated, \Cfoilfinal{} hold again. Refusals erode too: \Hzero{} harmful requests are refused at
+turn~0 and \Hfinal{} at the end. Apologising is a poor sign of folding: \Kholdconp{} of replies that
+apologise still keep the correct answer, and folds are, if anything, more common without an apology.
+A teacher-forced log-probability contrast between the correct and the wrong answer agrees with the
+text verdict on \Dsignp{} of cells (majority baseline \Dmaj, AUROC \Dauc). Code, factual suites and
+per-turn outputs are released; the harmful-request suite is available to evaluation teams on request.
+\end{abstract}
+
+\begin{findings}
+\begin{itemize}[leftmargin=1.2em]
+\item \textbf{Correct answers rarely survive authority pressure.} \FPzero{} false-premise questions are
+answered correctly at turn~0; \FPfinal{} still are after four turns of ``a reference / my professor
+says~$X$'' (Figure~\ref{fig:hold}a).
+\item \textbf{Naming the wrong answer is what does it.} Asserting the \emph{correct} answer in
+parallel wording, a neutral ``are you sure?'', or a plain re-ask leave the answer almost untouched
+(\Cgoldpeak, \Cneutralpeak, \Cnonepeak{} hold vs.\ \Cfoilpeak; Figure~\ref{fig:hold}b, Table~\ref{tab:controls}).
+\item \textbf{Claims about the model's own past are resisted more:} \MRfinal{} memory-rewrite items
+hold at the end, and more hold than under authority pressure at every pressure turn.
+\item \textbf{Apology $\neq$ capitulation.} Concession language appears in \Kconp{} of replies to
+a pushed wrong answer; \Kholdconp{} of those still keep the correct answer.
+\item \textbf{Refusals fold under excuses} (\Hzero{} $\rightarrow$ \Hfinal{}), unevenly across harm types.
+\end{itemize}
+\end{findings}
+
+\input{sec_intro}
+\input{sec_related}
+\input{sec_method}
+\input{sec_results}
+\input{sec_discussion}
+
+\clearpage
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sec_appendix}
+
+\end{document}

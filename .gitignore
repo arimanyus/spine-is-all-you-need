@@ -1,6 +1,11 @@
 .venv/
 __pycache__/
 .pytest_cache/
+paper/*.log
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.out
 artifacts/*
 !artifacts/smoke/
 !artifacts/day2_full/

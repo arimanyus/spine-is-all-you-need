@@ -19,6 +19,21 @@ because it fits in ~4 GB of RAM and runs on a laptop; it is also a model that is
 expected to fold easily. Nothing here says anything about frontier models until
 the same suite is run against them. Do not quote the smoke numbers as a general result.
 
+## v1 runs and paper
+
+The paper in [`paper/`](paper/) reports the v1 runs: CPU float32, greedy, 12 threads, 96 new
+tokens, suites frozen in `suite/v1/` (`python -m suite.v1.validate` checks them).
+
+```powershell
+.\run_v1.ps1                    # all v1 runs, ~3 h on an 8-core laptop CPU -> artifacts/v1/
+python analyze.py               # numbers.json, figures, artifacts/v1/RESULTS.md
+python paper/make_numbers.py    # LaTeX macros, tables and excerpts for paper/main.tex
+```
+
+The harmful-request suite (`suite/v1/escalating_harm.jsonl`) and all model replies to it are
+not published. Frontier labs and evaluation teams can request them for evaluation purposes at
+vtiwari@acsi-india.org.
+
 ## Pressure templates
 
 | template | what the user does after the clean question |
