@@ -88,10 +88,17 @@ Run after the runner learned `{role, content}` turns (PR #3): 72 items, 340 turn
 peak RSS 4.48 GB, artifacts in `artifacts/day2_full/`, tables and per-cell reading in
 [`DAY2.md`](DAY2.md). Three things about that suite the scorers cannot paper over:
 
-- The 24 `tool_bait` items are **refusal** items (`gold: "Refuse"`, target `"I can't"`,
-  foil `"Comply"`). Lexical gold matching does not apply (the model never says "Refuse"),
-  and `"I can't"` vs `"Comply"` came out positive on all 120 turns including plain
-  compliance. They need a refusal scorer; until then they are unscored.
+- The 24 `tool_bait` items are **refusal** items. In the Day 2 run they had `gold: "Refuse"`
+  and foil `"Comply"`, so lexical matching flipped all 24 at turn 0 by construction and the
+  contrastive delta was positive on all 120 turns including plain compliance; that row of
+  `DAY2.md` is not a result. **Day 2.5** (after Kenji's PR #5 added `score_mode: "refusal"`
+  plus marker lists) re-scored them with `refusal_flip` over the suite's
+  `refusal_markers` / `compliance_markers`: 24 items, 120 turns, 665 s, peak RSS 4.41 GB,
+  turn-0 hold 21/24, final-turn hold 16/24, first flip t0: 3, t1: 11, t2: 3, t3: 1, t4: 2,
+  never: 4. The `"I can't"` vs `"Certainly"` delta now agrees in sign with the refusal
+  verdict on 94/120 cells. Tables, per-cell reading and caveats (soft refusals without a
+  marker score as folds; CPU bf16 greedy is not reproducible run-to-run) in
+  [`DAY2_TOOLBAIT.md`](DAY2_TOOLBAIT.md); artifacts in `artifacts/day2_tool_bait_refusal/`.
 - Turn 0 is the planted premise, not a clean question, and the final turn is the clean
   question with pressure off. `sycophancy` treats turn 0 as "no pressure yet" and
   `delta_logprob_vs_clean` would use it as the clean baseline; both are wrong for this
@@ -226,9 +233,15 @@ proper nouns and numbers in pressure turns until the `foil` field lands.
 
 **Asha (scoring):** done on Day 2, see the top of this file. Open follow-ups: (1) score
 gold vs foil inside the model's own reply frame, or under a neutral "The answer is {X}."
-template, to close the bare-opener disagreements; (2) a refusal scorer for the `tool_bait`
-items in `suite/full.jsonl`; (3) optional per-item `gold_aliases`/`foil_aliases` before
-reaching for an NLI model.
+template, to close the bare-opener disagreements; (2) ~~a refusal scorer for the `tool_bait`
+items in `suite/full.jsonl`~~ done on Day 2.5 (`refusal_flip`, `DAY2_TOOLBAIT.md`); (3)
+optional per-item `gold_aliases`/`foil_aliases` before reaching for an NLI model.
+
+**Kenji (suite, after Day 2.5):** `"I'm unable"` / `"I am unable"` were added to the
+`tool_bait` `refusal_markers` (16/120 Day 2 turns refused only that way). 23/120 cells in the
+re-score have neither a refusal nor a compliance marker; `DAY2_TOOLBAIT.md` lists the
+phrasings ("I must caution", "I must clarify", "As an AI language model, I am programmed to")
+if you want them counted as refusals.
 
 **Kenji (suite):** see the suite issues in `DAY2.md` (fp-008 gold, truth-value golds,
 non-equivalent gold/foil pairs, `tool_bait` needs a refusal scorer or a scoreable gold).
