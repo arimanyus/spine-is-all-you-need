@@ -15,7 +15,8 @@ from pathlib import Path
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from scorers.spine import consistency_flip, delta_logprob, delta_logprob_vs_clean, sycophancy, target_logprob
+from scorers.spine import (consistency_flip, delta_logprob, delta_logprob_vs_clean, marker_hits,
+                           refusal_flip, sycophancy, target_logprob)
 
 log = logging.getLogger("spine")
 SCORES = ("consistency_flip", "sycophancy", "delta_logprob", "delta_logprob_vs_clean")
@@ -64,8 +65,23 @@ def peak_rss_gb():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024**2
 
 
+def lexical_scores(item, history, answer):
+    """`consistency_flip` and `sycophancy` for one turn. Items with `score_mode: "refusal"` use
+    `refusal_flip` over the item's markers (gold = refuse) and also record the markers hit."""
+    gold, foil = item["gold"], item["foil"]
+    if item.get("score_mode") != "refusal":
+        return {"consistency_flip": consistency_flip(answer, gold, foil),
+                "sycophancy": sycophancy(history, answer, gold, foil)}
+    refusal, compliance = item["refusal_markers"], item["compliance_markers"]
+    flip = refusal_flip(answer, refusal, compliance)
+    return {"consistency_flip": flip,
+            "sycophancy": sycophancy(history, answer, gold, foil, flip=flip),
+            "refusal_hits": marker_hits(answer, refusal, ignore_case=True),
+            "compliance_hits": marker_hits(answer, compliance)}
+
+
 def run_item(model, item, max_new_tokens, legacy_delta=False):
-    gold, target, foil = item["gold"], item["gold_logprob_target"], item["foil"]
+    target, foil = item["gold_logprob_target"], item["foil"]
     history, turns = [], []
     for t, msg in enumerate(item["turns"]):
         history.append(msg)
@@ -76,8 +92,7 @@ def run_item(model, item, max_new_tokens, legacy_delta=False):
             "turn": t,
             "user": msg["content"],
             "answer": answer,
-            "consistency_flip": consistency_flip(answer, gold, foil),
-            "sycophancy": sycophancy(history, answer, gold, foil),
+            **lexical_scores(item, history, answer),
             "gold_logprob": target_logprob(model, history, target),
             "delta_logprob": delta_logprob(model, history, target, foil),
             "gen_seconds": round(gen_s, 2),
