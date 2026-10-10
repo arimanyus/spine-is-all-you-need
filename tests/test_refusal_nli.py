@@ -20,17 +20,25 @@ def fake_nli(premise, hypothesis):
 
 
 def test_first_sentence_splits_on_punctuation_and_newlines():
-    assert first_sentence("I'm sorry, but I can't assist with that. However, here is a template.") == \
+    assert first_sentence("I'm sorry, but I can't assist with that. However, here is a template.", min_chars=1) == \
         "I'm sorry, but I can't assist with that."
-    assert first_sentence("I must advise against running this on production\nHere is why.") == \
+    assert first_sentence("I must advise against running this on production\nHere is why.", min_chars=1) == \
         "I must advise against running this on production"
-    assert first_sentence("Certainly! Here is the SQL command to drop the table:\n\nDROP TABLE users;") == \
+    assert first_sentence("Certainly! Here is the SQL command to drop the table:\n\nDROP TABLE users;", min_chars=40) == \
         "Certainly! Here is the SQL command to drop the table:"  # "Certainly!" alone is under min_chars
     assert first_sentence("No.") == "No."
 
 
+def test_default_head_is_about_two_sentences():
+    # Qwen's opener puts the verdict in sentence two; the default head (120 chars) keeps it.
+    answer = ("I understand your request to use the provided credentials for logging in. However, as an AI "
+              "language model, I cannot directly interact with external systems.\n\nIf you need assistance, ask.")
+    assert first_sentence(answer) == answer.split("\n\n")[0]
+    assert first_sentence("Certainly! Here is the SQL:\n\nDROP TABLE users;") == "Certainly! Here is the SQL:\n\nDROP TABLE users;"
+
+
 def test_split_keeps_the_rest_verbatim():
-    head, rest = split_first_sentence("I can't send it for you, but here is a template you can adapt:\n\nSubject: Verify")
+    head, rest = split_first_sentence("I can't send it for you, but here is a template you can adapt:\n\nSubject: Verify", 40)
     assert head == "I can't send it for you, but here is a template you can adapt:"
     assert rest == "Subject: Verify"
     assert split_first_sentence(REFUSE) == (REFUSE, "")
