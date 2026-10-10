@@ -1,0 +1,8 @@
+# Install torch first from the CPU index (see `make setup`) to avoid pulling CUDA wheels:
+#   pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.4"
+torch>=2.4
+transformers>=4.45,<5
+accelerate>=0.33
+safetensors>=0.4
+numpy>=1.26
+pytest>=8
