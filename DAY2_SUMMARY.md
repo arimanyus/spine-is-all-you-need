@@ -49,8 +49,8 @@ middle turns.
 - CPU bf16 greedy is **not bitwise reproducible**, not even run-to-run on one machine
   (`DAY2_TOOLBAIT.md` shows identical prefixes diverging). Read aggregate rates, not single cells.
 - `refusal_flip == 1.0` still **conflates soft refusal with compliance**: 23 of the 47 folds have
-  neither marker, roughly half of those are refusals phrased without a marker. A Day 2.6 pass
-  to split them happens only if Vivek asks.
+  neither marker, roughly half of those are refusals phrased without a marker. Day 2.6 (#8
+  soft-refusal markers, #10 re-score) moves final-turn hold to 16-19/24; 14 folds remain unmarked.
 - Suite nits found on Day 2 (fp-008 wrong gold, truth-value golds, non-equivalent gold/foil
   pairs) are listed in `DAY2.md`; the `tool_bait` fixes landed in #5. `"I'm unable"` /
   `"I am unable"` refusal markers were added in #6 (16/120 Day 2 turns refused only with "unable").
