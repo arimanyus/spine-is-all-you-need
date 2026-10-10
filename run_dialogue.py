@@ -15,8 +15,9 @@ from pathlib import Path
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from scorers.spine import (consistency_flip, delta_logprob, delta_logprob_vs_clean, marker_hits,
-                           refusal_flip, sycophancy, target_logprob)
+from scorers.spine import (NLI_CHECKPOINT, consistency_flip, delta_logprob, delta_logprob_vs_clean,
+                           load_refusal_nli, marker_hits, refusal_flip, refusal_flip_nli, sycophancy,
+                           target_logprob)
 
 log = logging.getLogger("spine")
 SCORES = ("consistency_flip", "sycophancy", "delta_logprob", "delta_logprob_vs_clean")
@@ -68,22 +69,28 @@ def peak_rss_gb():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024**2
 
 
-def lexical_scores(item, history, answer):
+def lexical_scores(item, history, answer, nli=None):
     """`consistency_flip` and `sycophancy` for one turn. Items with `score_mode: "refusal"` use
-    `refusal_flip` over the item's markers (gold = refuse) and also record the markers hit."""
+    `refusal_flip` over the item's markers (gold = refuse) and also record the markers hit;
+    with an `nli` classifier (`load_refusal_nli`) the flip is `refusal_flip_nli` on the last
+    user turn and the lexical value is kept as `refusal_flip_lexical`."""
     gold, foil = item["gold"], item["foil"]
     if item.get("score_mode") != "refusal":
         return {"consistency_flip": consistency_flip(answer, gold, foil),
                 "sycophancy": sycophancy(history, answer, gold, foil)}
     refusal, compliance = item["refusal_markers"], item["compliance_markers"]
-    flip = refusal_flip(answer, refusal, compliance)
+    flip = lexical = refusal_flip(answer, refusal, compliance)
+    extra = {}
+    if nli is not None:
+        flip = refusal_flip_nli(answer, history[-1]["content"], compliance, nli=nli)
+        extra = {"refusal_flip_lexical": lexical}
     return {"consistency_flip": flip,
             "sycophancy": sycophancy(history, answer, gold, foil, flip=flip),
             "refusal_hits": marker_hits(answer, refusal, ignore_case=True),
-            "compliance_hits": marker_hits(answer, compliance)}
+            "compliance_hits": marker_hits(answer, compliance), **extra}
 
 
-def run_item(model, item, max_new_tokens, legacy_delta=False):
+def run_item(model, item, max_new_tokens, legacy_delta=False, nli=None):
     target, foil = item["gold_logprob_target"], item["foil"]
     history, turns = [], []
     for t, msg in enumerate(item["turns"]):
@@ -95,7 +102,7 @@ def run_item(model, item, max_new_tokens, legacy_delta=False):
             "turn": t,
             "user": msg["content"],
             "answer": answer,
-            **lexical_scores(item, history, answer),
+            **lexical_scores(item, history, answer, nli),
             "gold_logprob": target_logprob(model, history, target),
             "delta_logprob": delta_logprob(model, history, target, foil),
             "gen_seconds": round(gen_s, 2),
@@ -151,6 +158,10 @@ def main():
     p.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float32"])
     p.add_argument("--legacy-delta", action="store_true",
                    help="also record the Day 1 clean-vs-pressured delta_logprob_vs_clean (ablation)")
+    p.add_argument("--lexical-refusal", action="store_true",
+                   help="score refusal items with the lexical refusal_flip only (no NLI classifier)")
+    p.add_argument("--nli-checkpoint", default=None,
+                   help=f"NLI checkpoint for refusal_flip_nli (default $SPINE_NLI_CHECKPOINT or {NLI_CHECKPOINT})")
     args = p.parse_args()
 
     out = Path(args.out)
@@ -163,15 +174,21 @@ def main():
     log.info("loading %s (%s) on cpu, %d items", args.model, args.dtype, len(items))
     start = time.time()
     model = ChatModel(args.model, args.dtype)
-    log.info("loaded in %.0fs, rss=%.2fGB", time.time() - start, peak_rss_gb())
+    nli = None
+    if not args.lexical_refusal and any(i.get("score_mode") == "refusal" for i in items):
+        nli = load_refusal_nli(args.nli_checkpoint)  # None (with a warning) -> lexical fallback
+    log.info("loaded in %.0fs, rss=%.2fGB, refusal scorer=%s", time.time() - start, peak_rss_gb(),
+             "nli" if nli else "lexical")
 
-    results = [run_item(model, item, args.max_new_tokens, args.legacy_delta) for item in items]
+    results = [run_item(model, item, args.max_new_tokens, args.legacy_delta, nli) for item in items]
     with open(out / "results.jsonl", "w") as f:
         for r in results:
             f.write(json.dumps(r) + "\n")
 
     summary = summarize(results, {
         "model": args.model, "dtype": args.dtype, "suite": args.suite, "template": args.template,
+        "refusal_scorer": "nli" if nli else "lexical",
+        "nli_checkpoint": (args.nli_checkpoint or os.environ.get("SPINE_NLI_CHECKPOINT", NLI_CHECKPOINT)) if nli else None,
         "max_new_tokens": args.max_new_tokens,
         "decoding": "greedy", "elapsed_seconds": round(time.time() - start, 1), "peak_rss_gb": round(peak_rss_gb(), 2),
         "torch": torch.__version__, "threads": torch.get_num_threads(),
