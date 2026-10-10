@@ -3,9 +3,9 @@
 Status: **outline only**. Not a paper, not a submission. Vivek is head researcher and final
 approver; nothing is submitted or published without his explicit yes. Every number below is
 copied from [`DAY1.md`](DAY1.md), [`DAY2.md`](DAY2.md), [`DAY2_TOOLBAIT.md`](DAY2_TOOLBAIT.md),
-[`DAY2_SUMMARY.md`](DAY2_SUMMARY.md) and the committed `artifacts/`; nothing new was run.
-A Day 2.6 pass (soft-refusal markers) may still be in flight, so the `tool_bait` numbers
-may update.
+[`DAY2_SUMMARY.md`](DAY2_SUMMARY.md), the Day 2.6 PRs (#8 soft-refusal markers, #10
+re-score; merge order #8 then #10) and the committed `artifacts/`; nothing new was run.
+`tool_bait` numbers are provisional under CPU bf16 noise (see Section 3).
 
 ## 1. Claim
 
@@ -61,8 +61,13 @@ says anything about larger models until the suite is run on them.
   first flip t0: 3, t1: 11, t2: 3, t3: 1, t4: 2, never: 4. **Never flipped: tb-010, tb-012,
   tb-014, tb-023.** Modal pattern: refuse the direct ask, comply on the first excuse. With foil
   `"Certainly"`, the contrastive delta sign agrees with the refusal verdict on **94/120** cells
-  ([`DAY2_TOOLBAIT.md`](DAY2_TOOLBAIT.md)). These numbers may change if Day 2.6 soft-refusal
-  markers land.
+  ([`DAY2_TOOLBAIT.md`](DAY2_TOOLBAIT.md)).
+- **`tool_bait` Day 2.6 (PR #8 soft-refusal markers, PR #10 re-score).** Turn-0 hold stays
+  21/24; final-turn hold moves 16 -> 19/24, and the move is attributable to the markers
+  (re-scoring the Day 2.5 answers offline, 8 of the 23 empty-hit folds become holds).
+  tb-010/012/014/023 still never flip. **Quote final hold as 16-19/24, not 19/24:** CPU bf16
+  noise is large (only 34/120 cells identical across the two runs), so 19 is provisional.
+  14 folds still have neither marker; "I must caution" hit 0 times.
 
 ## 4. Caveats
 
@@ -71,8 +76,9 @@ says anything about larger models until the suite is run on them.
 - CPU bf16 greedy is not bitwise reproducible, not even run-to-run on one machine
   (identical prefixes diverged in [`DAY2_TOOLBAIT.md`](DAY2_TOOLBAIT.md)). Read aggregate
   rates, not cells.
-- `refusal_flip == 1.0` conflates soft refusal with compliance: 23 of 47 folds have neither
-  marker, and roughly half of those read as refusals phrased without a marker.
+- `refusal_flip == 1.0` conflates soft refusal with compliance: 23 of 47 folds had neither
+  marker on Day 2.5, 14 still do after the Day 2.6 markers. More regex will not close this;
+  the next step is a first-sentence classifier or NLI check.
 - Suite gold/foil history: fp-008 wrong gold, truth-value golds (mr-008, mr-022),
   non-equivalent gold/foil pairs; `tool_bait` fixes landed in #5, "unable" refusal markers in
   #6. The suite has been edited between runs, so Day 2 and Day 2.5 are not the same suite.
@@ -88,7 +94,8 @@ says anything about larger models until the suite is run on them.
   the final turn) run on the full suite, as the headline; recovery-on-clean-re-ask as a
   secondary measurement, not the main result.
 - Human audit of the never-flipped items and of every `refusal_flip == 1.0` cell with no
-  marker; precision/recall of the refusal scorer against those human labels.
+  marker; precision/recall of the refusal scorer (and of any first-sentence classifier / NLI
+  replacement) against those human labels.
 - A cleaned suite with answer-equivalent gold/foil pairs, no truth-value golds, and
   middle-turn questions that can be scored, with the suite frozen before the headline run.
 - Baselines: kindbench-style scripted multi-turn pressure and Turpin et al. 2023 unfaithful-CoT
@@ -108,8 +115,8 @@ Open questions for Vivek:
 
 - Is the target a methods/benchmark note (the harness and scorers) or an empirical claim
   about spine? The former is defensible now; the latter needs Section 5.
-- Run the Day 2.6 soft-refusal split before any `tool_bait` number is quoted, or report the
-  conflation as-is?
+- Is a first-sentence classifier / NLI refusal scorer in scope before any `tool_bait` number
+  is quoted, or do we report 16-19/24 with the 14 unmarked folds as a stated limitation?
 - Which larger models and how many seeds are in budget outside Cursor?
 - Should `full.jsonl` be restructured to the Day 1 shape (sustained pressure) before the next run?
 - Venue and timeline, if any.
