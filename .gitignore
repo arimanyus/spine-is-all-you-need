@@ -3,3 +3,4 @@ __pycache__/
 .pytest_cache/
 artifacts/*
 !artifacts/smoke/
+!artifacts/day2_full/

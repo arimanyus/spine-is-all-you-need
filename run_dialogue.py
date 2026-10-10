@@ -15,9 +15,10 @@ from pathlib import Path
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from scorers.spine import consistency_flip, delta_logprob, sycophancy, target_logprob
+from scorers.spine import consistency_flip, delta_logprob, delta_logprob_vs_clean, sycophancy, target_logprob
 
 log = logging.getLogger("spine")
+SCORES = ("consistency_flip", "sycophancy", "delta_logprob", "delta_logprob_vs_clean")
 
 # Suite template names that are grouped under another name in the summary.
 TEMPLATE_ALIASES = {"false_premise_stack": "false_premise"}
@@ -63,7 +64,8 @@ def peak_rss_gb():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024**2
 
 
-def run_item(model, item, max_new_tokens):
+def run_item(model, item, max_new_tokens, legacy_delta=False):
+    gold, target, foil = item["gold"], item["gold_logprob_target"], item["foil"]
     history, turns = [], []
     for t, msg in enumerate(item["turns"]):
         history.append(msg)
@@ -74,12 +76,14 @@ def run_item(model, item, max_new_tokens):
             "turn": t,
             "user": msg["content"],
             "answer": answer,
-            "consistency_flip": consistency_flip(history, answer, item["gold"]),
-            "sycophancy": sycophancy(history, answer, item["gold"]),
-            "gold_logprob": target_logprob(model, history, item["gold_logprob_target"]),
-            "delta_logprob": delta_logprob(model, history, item["gold_logprob_target"]),
+            "consistency_flip": consistency_flip(answer, gold, foil),
+            "sycophancy": sycophancy(history, answer, gold, foil),
+            "gold_logprob": target_logprob(model, history, target),
+            "delta_logprob": delta_logprob(model, history, target, foil),
             "gen_seconds": round(gen_s, 2),
         }
+        if legacy_delta:
+            rec["delta_logprob_vs_clean"] = delta_logprob_vs_clean(model, history, target)
         turns.append(rec)
         history.append({"role": "assistant", "content": answer})
         log.info("%s t%d flip=%.1f syco=%.2f dlogp=%+.2f (%.0fs) %r",
@@ -105,7 +109,7 @@ def summarize(results, meta):
         for t in range(n_turns):
             recs = [r["turns"][t] for r in rs if t < len(r["turns"])]
             per_turn.append({k: round(sum(x[k] for x in recs) / len(recs), 3)
-                             for k in ("consistency_flip", "sycophancy", "delta_logprob")})
+                             for k in SCORES if k in recs[0]})
         return {
             "n": len(rs),
             "held_turn0": sum(r["held_turn0"] for r in rs),
@@ -119,13 +123,15 @@ def summarize(results, meta):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--suite", required=True, help="JSONL with {id, template, turns[], gold, gold_logprob_target}; "
+    p.add_argument("--suite", required=True, help="JSONL with {id, template, turns[], gold, gold_logprob_target, foil}; "
                    "each turn is a user string or a {role, content} message")
     p.add_argument("--model", default="Qwen/Qwen2.5-1.5B-Instruct")
     p.add_argument("--limit", type=int, default=None, help="only run the first N items")
     p.add_argument("--out", required=True, help="output directory (results.jsonl, summary.json, run.log)")
     p.add_argument("--max-new-tokens", type=int, default=64)
     p.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float32"])
+    p.add_argument("--legacy-delta", action="store_true",
+                   help="also record the Day 1 clean-vs-pressured delta_logprob_vs_clean (ablation)")
     args = p.parse_args()
 
     out = Path(args.out)
@@ -140,7 +146,7 @@ def main():
     model = ChatModel(args.model, args.dtype)
     log.info("loaded in %.0fs, rss=%.2fGB", time.time() - start, peak_rss_gb())
 
-    results = [run_item(model, item, args.max_new_tokens) for item in items]
+    results = [run_item(model, item, args.max_new_tokens, args.legacy_delta) for item in items]
     with open(out / "results.jsonl", "w") as f:
         for r in results:
             f.write(json.dumps(r) + "\n")
