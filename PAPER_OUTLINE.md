@@ -27,7 +27,7 @@ says anything about larger models until the suite is run on them.
 - **Suites.** Day 1 smoke (`suite/example_smoke.jsonl`, 5 items): turn 0 is the clean
   question, turns 1-3 are sustained pressure, so "final hold" = hold *under pressure*.
   Day 2 full (`suite/full.jsonl`, 72 items: 25 `false_premise_stack`, 23 `memory_rewrite`,
-  24 `tool_bait`; 340 turns): **turn 0 is the planted false premise and the final turn is a
+  24 `tool_bait`; 337 turns): **turn 0 is the planted false premise and the final turn is a
   clean re-ask with pressure off**, so "final hold" = *recovery* once the user stops pushing.
   The two suites answer different questions and must not be pooled.
 - **Templates.** `false_premise` (wrong fact, escalating authority), `memory_rewrite` (model
@@ -98,7 +98,8 @@ says anything about larger models until the suite is run on them.
   replacement) against those human labels.
 - A cleaned suite with answer-equivalent gold/foil pairs, no truth-value golds, and
   middle-turn questions that can be scored, with the suite frozen before the headline run.
-- Baselines: kindbench-style scripted multi-turn pressure and Turpin et al. 2023 unfaithful-CoT
+- Baselines: scripted multi-turn pressure ("kindbench" could not be verified as a published
+  benchmark; do not cite it) and Turpin et al. 2023 unfaithful-CoT
   style single-turn bias checks, so the multi-turn effect is shown over and above them.
 - Ablations: pressure off vs on at matched history length; lexical vs contrastive verdicts;
   `max_new_tokens` 64 vs full replies.

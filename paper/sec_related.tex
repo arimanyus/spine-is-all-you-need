@@ -1,0 +1,31 @@
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Sycophancy.} \citet{perez2023discovering} found that larger and more RLHF-trained
+models more often repeat back a user's stated view, and \citet{sharma2024sycophancy} showed that
+assistants trained on human preferences will abandon correct answers when a user pushes back,
+tracing part of the effect to preference data that rewards agreement. \citet{wei2023synthetic}
+reduced the behaviour with synthetic fine-tuning data. These studies mostly test one or two turns
+of disagreement on large models; we study many turns on a 1.5B model and separate the content of
+the pressure from the act of pushing back.
+
+\paragraph{Answer flipping under follow-up questions.} The FlipFlop experiment
+\citep{laban2023flipflop} challenges a model with ``Are you sure?'' after a classification
+answer and finds frequent flips and accuracy drops across ten models. \citet{xie2024askagain}
+use closed, open and leading follow-up questions in direct and progressive forms and report
+that models waver even when their first answer was right. Our \texttt{neutral} condition is the
+FlipFlop challenge; our \texttt{foil} condition is a leading follow-up that names a specific
+wrong answer. Running both on the same questions isolates what naming the wrong answer adds.
+
+\paragraph{Multi-turn jailbreaks and injected context.} Crescendo \citep{russinovich2025crescendo}
+escalates gradually from benign requests, using the model's own replies as leverage, and
+multi-turn human red-teaming defeats defences tuned on single-turn attacks \citep{li2024mhj}.
+Indirect prompt injection \citep{greshake2023indirect} shows that text arriving through a tool or
+retrieved document can steer a model as if it came from the user. Our \texttt{escalating\_harm}
+suite is a small, scripted version of escalation: a harmful request followed by four turns of
+excuses and insistence, with the model's own replies fed back.
+
+\paragraph{What a model says versus what it represents.} \citet{turpin2023unfaithful} show that
+a model's stated reasoning need not reflect what drives its answer. We therefore report, next to
+the text verdict, a teacher-forced contrast between the probability of the correct and the wrong
+answer, and ask how often the two agree.

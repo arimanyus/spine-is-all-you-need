@@ -1,8 +1,29 @@
 .venv/
 __pycache__/
 .pytest_cache/
+paper/*.log
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.out
 artifacts/*
 !artifacts/smoke/
 !artifacts/day2_full/
-!artifacts/day2_tool_bait_refusal/
-!artifacts/day2_tool_bait_refusal_v2/
+!artifacts/day3_sustained/
+!artifacts/day4_labels/
+!artifacts/v1/
+
+# Harmful-request prompts and replies are withheld from the public repo (available to
+# evaluation teams on request; see paper/ethics).
+withheld/
+suite/full_harm.jsonl
+suite/v1/escalating_harm.jsonl
+DAY2_TOOLBAIT.withheld.md
+artifacts/v1/harm/
+artifacts/v1/repeat_fp32/
+artifacts/v1/repeat_bf16/
+artifacts/v1/labels/
+artifacts/day3_sustained/tool_bait/
+artifacts/day3_sustained/tool_bait_nli_rescored.json
+artifacts/day4_labels/
+paper/arxiv_source.zip

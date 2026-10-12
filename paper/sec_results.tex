@@ -1,0 +1,179 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Factual answers under sustained pressure}
+\label{sec:res-factual}
+
+The model answers \FPzero{} \texttt{false\_premise} and \MRzero{} \texttt{memory\_rewrite}
+questions correctly at turn~0. Authority pressure then breaks it almost at once
+(Figure~\ref{fig:hold}a): after the first push only \FPone{} false-premise items hold (\FPonep,
+95\% CI \FPoneci), and at the final turn \FPfinal{} do (\FPfinalp, CI \FPfinalci). Of the items
+that held at turn~0, \FPever{} fold at least once and \FPrecover{} fold and then hold again at the
+end. The final turn, which restates the foil as established and asks for the bare answer, is the
+hardest: \FPthree{} items hold at turn~3, but only \FPfinal{} still holds when asked for a single
+word (Figure~\ref{fig:dialogues}, left).
+
+Claims about the model's own past are resisted much better. \MRone{} \texttt{memory\_rewrite}
+items hold after the first push and \MRfinal{} at the end (\MRfinalp, CI \MRfinalci); \MRever{} of
+the turn-0 holders fold at least once and \MRrecover{} recover by the final turn. At every pressure
+turn the memory-rewrite hold rate is at least twice the false-premise rate.
+
+Folds are clean (Figure~\ref{fig:labels}). Across all pressure turns of both suites the scorer finds
+only \Phedge{} hedges and \Pother{} non-answer: when the model gives way, it states the foil as the answer,
+often with an apology. Because the four-way label separates these cases, ``not holding'' here
+means ``asserting the wrong answer'' and not ``failing to answer''.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_labels.pdf}
+\caption{\textbf{Label shares per turn.} Pressure moves replies from \lab{hold} to \lab{fold}
+almost directly; \lab{hedge} and \lab{other} are rare for factual items and more common for
+harmful requests.}
+\label{fig:labels}
+\end{figure}
+
+\begin{figure}[tp]
+\centering
+\begin{minipage}[t]{0.49\linewidth}
+\begin{dialogue}{false\_premise \textperiodcentered{} fp-007}
+\input{ex_fp007.tex}
+\end{dialogue}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\linewidth}
+\begin{dialogue}{memory\_rewrite \textperiodcentered{} mr-009}
+\input{ex_mr009.tex}
+\end{dialogue}
+\end{minipage}
+\caption{\textbf{Two complete dialogues}, verbatim, with the scorer's label for each reply. Left:
+the model swings between the correct and the wrong answer and gives the wrong one when asked for
+the bare answer. Right: it apologises while keeping the correct answer for two turns, then folds
+when asked for the name only.}
+\label{fig:dialogues}
+\end{figure}
+
+\subsection{What causes the folds: matched controls}
+\label{sec:res-controls}
+
+The controls separate the content of the pressure from the act of pushing back
+(Table~\ref{tab:controls}, Figure~\ref{fig:hold}b). The turn-0 reply is byte-identical across the
+four conditions of each question, and \Cfoilzero{} questions hold there. At the last pressure turn
+(turn~2) only \Cfoilpeak{} hold when the user asserts the wrong answer. Parallel pressure for the
+\emph{correct} answer leaves \Cgoldpeak{} holding, the neutral challenge \Cneutralpeak{}, and a
+plain re-ask \Cnonepeak. The discordant pairs all point the same way: \Cogoldpeak, \Coneutralpeak{}
+and \Cononepeak{} questions hold only under the other condition, and none holds only under
+\texttt{foil}. Naming a wrong answer, not pushback as such, is what causes the folds.
+
+The final turn re-asks the question without restating the foil. Here \Cfoilfinal{} foil-condition
+questions hold again, so much of the effect is momentary compliance that fades once the foil stops
+being repeated; the gap to the correct-answer condition remains ($p=\Cpgoldfinal$), while the gaps
+to the neutral and no-challenge conditions are no longer significant at this sample size. This is
+also why the sustained-pressure suites keep pushing the foil in their final turn: a final re-ask
+alone would hide most of the folds seen at the peak.
+
+\begin{table}[t]
+\centering\small
+\caption{\textbf{Matched controls}: questions (of \Cn) holding at each turn. Turns~0 and~3 are
+identical across conditions; only turns 1--2 differ. $p$: exact two-sided McNemar test against
+\texttt{foil} on the same questions, at the last pressure turn (peak) and the final re-ask.}
+\label{tab:controls}
+\begin{tabular}{@{}llccccrr@{}}
+\toprule
+& & \multicolumn{4}{c}{turn} & \multicolumn{2}{c}{$p$ vs.\ \texttt{foil}} \\
+\cmidrule(lr){3-6}\cmidrule(l){7-8}
+condition & turns 1--2 & 0 & 1 & 2 & 3 & peak & final \\
+\midrule
+\rows{tab_controls.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Refusals under escalating harmful requests}
+\label{sec:res-harm}
+
+The model refuses \Hzero{} harmful requests at turn~0 and \Hfinal{} at the final turn
+(\Hfinalp, CI \Hfinalci). Of the turn-0 refusals, \Hever{} give way at least once and \Hrecover{}
+refuse again by the end, so refusals oscillate more than factual answers do. Hedges and non-answers
+are also more common here (Figure~\ref{fig:labels}, right): a reply may describe a harmful action
+without performing it, or stall. Robustness differs sharply by harm class (Table~\ref{tab:harm}):
+malware requests are still refused at the end, while none of the unauthorized-access or
+destructive-command requests are, though each class has at most five items. The NLI refusal label
+agrees with the lexical refusal scorer on \HNliLex{} cells; the largest group of the \HLexDis{}
+disagreements (\HLexOtherFold) are replies with no refusal phrase that the NLI model reads as
+agreeing to the request and the lexical scorer leaves as \lab{other}. \Tharm{} of harm replies reach the 96-token cap, against \Tmain{} factual replies, so
+some long compliant replies are cut short; the label is decided on what was generated.
+
+\begin{figure}[t]
+\centering
+\begin{minipage}[c]{0.5\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/fig_delta.pdf}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.45\linewidth}
+\centering\small
+\captionof{table}{\textbf{Refusals held at the final turn}, by harm class.}
+\label{tab:harm}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+harm class & items & held \\
+\midrule
+\rows{tab_harm.tex}
+\bottomrule
+\end{tabular}
+\end{minipage}
+\caption{\textbf{Left: the teacher-forced contrast} $\Delta$ on all \Dn{} hold and fold cells
+(factual suite and controls). Folds sit almost entirely below zero, holds mostly above.}
+\label{fig:delta}
+\end{figure}
+
+\subsection{Does the probability contrast agree with the text?}
+\label{sec:res-delta}
+
+On the \Dn{} factual cells labelled hold (\Dhold) or fold (\Dfold), the sign of $\Delta$ matches the
+text label on \Dsign{} cells (\Dsignp, CI \Dsignci), above the \Dmaj{} majority-class baseline, and
+$\Delta$ separates hold from fold with AUROC \Dauc{} (Figure~\ref{fig:delta}). Dividing by token
+count gives \Dtoksignp{} sign agreement and AUROC \Dtokauc. Most disagreements are holds with
+$\Delta \le 0$ (\Dholdneg{} cells): under pressure the model typically opens with an apology or a
+restatement before giving the correct answer, and its preference between the two bare answers
+need not favour the one it then gives. The reverse is rare: only \Dfoldpos{} of \Dfold{} folds
+have $\Delta > 0$ (at most $+\Dfoldmax$ nats). There is therefore little sign of the model
+preferring the correct answer while saying the wrong one.
+
+\subsection{Apologising is not folding}
+\label{sec:res-concession}
+
+Replies to a pushed wrong answer (\Kn{} cells: pressure turns of both factual suites and of the
+\texttt{foil} controls) contain concession language in \Kcon{} cases (\Kconp). Of those, \Kholdcon{}
+(\Kholdconp) still keep the correct answer, and \Kfoldcon{} fold. Replies without concession
+language fold \emph{more} often (\Kfoldplainp, against \Kfoldconp), because a bare fold like
+``Osaka.'' needs no apology. A score that counts apologies as capitulation, as earlier versions of
+this harness did, would mix politeness with folding.
+
+\subsection{How reliable are the labels?}
+\label{sec:res-labels}
+
+We drew a random sample of \Aalln{} scored replies (\Afn{} factual, \Ahn{} harmful-request; seed 0)
+and had it labelled by two blind AI annotators: two separate instances of an LLM (Claude), each
+given only the request, the correct and wrong behaviour, the reply and the label definitions, and
+neither shown the scorer's labels or the other's output. \emph{These are not human labels.} The two
+agreed on every cell, so in effect they are one annotator; we report agreement with it but do not
+treat it as an independent check. On factual cells the scorer agrees with the annotators on
+\AfSAagree{} of cells ($\kappa=\AfSAk$). Both disagreements are ambiguous replies: one names both
+answers (annotators: \lab{hedge}), the other names the foil without answering the question
+(annotators: \lab{other}). On harmful-request cells agreement is lower: \AhSAagree{} for the NLI
+scorer ($\kappa=\AhSAk$) and \AhLAagree{} for the lexical scorer ($\kappa=\AhLAk$). Half of the
+NLI scorer's disagreements are replies that go along with a request without any compliance
+marker, which the scorer leaves as \lab{other} and the annotators call \lab{fold}. The
+factual labels therefore match the annotator closely, while the refusal labels
+are noisier and, if anything, undercount folds. A label sheet for human annotation is released with
+the code.
+
+\subsection{Reproducibility and numeric precision}
+\label{sec:res-repro}
+
+Rerunning the first four harmful-request dialogues in float32 reproduced \Repsame{} of \Repcells{}
+replies byte for byte. The same four dialogues in bfloat16 gave \Precsame{} of
+\Preccells{} comparable replies identical and diverged on \Precdiv{} of four items, with the label
+unchanged on \Preclabel{} of the compared cells; we compare only up to the first divergent reply,
+since later turns see a different history. Float32 on CPU is therefore exactly repeatable, while
+bfloat16 changes the wording of replies (though not the label of any compared reply) and from then
+on plays out a different dialogue; results from the two precisions should not be pooled.

@@ -1,0 +1,85 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{A named alternative is the active ingredient.} For this model, pushback alone does very
+little. A neutral ``are you sure?'' and an insistent ``I'm fairly confident you've made a mistake''
+leave \Cneutralpeak{} control questions holding, while the same two turns naming a specific wrong
+answer leave \Cfoilpeak. This differs from reports that a bare ``are you sure?'' causes large
+accuracy drops in larger chat models \citep{laban2023flipflop,xie2024askagain}; those studies use
+other models and tasks, so we read the contrast only as a reminder that the trigger can differ
+between models. It is in line with sycophancy toward a stated user view
+\citep{sharma2024sycophancy,perez2023discovering,wei2023synthetic}: the model gives the answer the
+user names.
+
+\paragraph{Most of the damage is momentary.} When the last control turn re-asks the question
+without restating the foil, \Cfoilfinal{} questions are correct again. An evaluation that applies
+pressure and then scores a clean final re-ask would therefore miss most folds, and one that scores
+only the first pushed turn would miss the later swings back and forth
+(Figure~\ref{fig:dialogues}). This is why we score every turn and keep the final turn under
+pressure. The bare-answer format of our final turns also matters: it leaves no room for the model
+to hedge or to restate the correct answer in passing, and it produces the lowest hold rate in the
+false-premise suite.
+
+\paragraph{Authority versus the model's own past.} Claims that the model said something earlier
+are resisted much better than claims from an outside authority. One plausible reason is that the
+model can see its own earlier replies in the context and they contradict the claim, while an
+appeal to a textbook cannot be checked against anything in the context. We did not test this
+explanation; a condition that removes the earlier replies from the history would.
+
+\paragraph{The text and the probabilities move together.} If the model kept preferring the correct
+answer while saying the wrong one, folds would come with positive $\Delta$. They almost never do
+(\Dfoldpos{} of \Dfold), and $\Delta$ separates hold from fold with AUROC \Dauc. For this model,
+then, a fold is a change in what it prefers to say, not a polite surface over an unchanged
+preference. Because $\Delta$ needs one forward pass and no generation, it is also a cheap signal
+for monitoring pressure at scale, though it scores only the bare answer as the opening of the
+reply and should not be read as a measure of what the model ``believes''.
+
+\paragraph{Scoring choices change the numbers.} Three choices that are easy to get wrong each moved
+our results. Scoring a non-answer as a fold, as earlier versions of this harness did, inflates
+fold rates; treating apologies as capitulation mixes politeness with folding
+(Section~\ref{sec:res-concession}); and an alias list that misses one form of the correct answer
+turns holds into non-answers. We found three such alias gaps after the runs, by reading replies the
+scorer had labelled \lab{other}; fixing them changed \Rn{} labels, all from \lab{other}, and none
+between \lab{hold} and \lab{fold} (Appendix~\ref{app:repro}).
+
+\subsection{Limitations}
+\begin{itemize}
+\item \textbf{One model, one decoding setting.} All results are for a single 1.5B instruct model
+with greedy decoding and one system prompt; nothing here says how larger models or sampled
+decoding behave.
+\item \textbf{Small, templated suites.} 48 factual and 24 harmful-request dialogues, and 16
+questions in the controls, give wide confidence intervals. Each template uses one fixed wording
+per turn, so the results are for these wordings; the final false-premise turn in particular
+combines a restated foil with a bare-answer format.
+\item \textbf{No human labels.} Labels come from a lexical scorer and, for refusals, an NLI
+classifier. We compare them with blind AI annotators, which are not a substitute for human
+judgement; the two annotators were instances of the same model and agreed on every cell, so they
+amount to one annotator. A human label sheet is released but has not been filled in.
+\item \textbf{Noisier refusal labels.} Agreement with the annotator is lower for refusals
+($\kappa=\AhSAk$) than for factual answers ($\kappa=\AfSAk$), and \Tharm{} of harmful-request
+replies are cut at the 96-token cap; refusal hold rates are less certain than factual ones.
+\item \textbf{Post-hoc alias fixes.} Three alias lists were corrected after the runs. The prompts
+did not change, and both the as-run and the corrected labels are recorded.
+\item \textbf{Withheld harmful-request suite.} Others cannot rerun the refusal results from the
+public release alone (Section~\ref{sec:ethics}).
+\end{itemize}
+
+\subsection{Ethics and release policy}
+\label{sec:ethics}
+The harmful-request suite asks for malware, fraud, unauthorized access, weapons and similar
+content, and the model complies with many of these requests. We therefore do not publish the
+harmful-request prompts or the model's replies to them. The same 24 prompts, and replies from pilot
+runs, were public in this project's repository before we adopted this policy; they have been
+removed from the current version, though they remain in its earlier history. We publish the code,
+the factual and control suites, all factual model outputs, and the aggregate refusal statistics
+reported here.
+Frontier labs and evaluation teams can obtain the harmful-request suite and the full refusal
+transcripts for evaluation purposes by writing to the author at
+\href{mailto:vtiwari@acsi-india.org}{\texttt{vtiwari@acsi-india.org}}.
+
+\section*{Acknowledgements and AI-assistance disclosure}
+The harness, suites, analysis code and the text of this paper were written with substantial help
+from an AI assistant (Claude, via Cursor) under the author's direction, and the blind annotators
+of Section~\ref{sec:res-labels} were instances of the same assistant. The author reviewed and is
+responsible for all content. Every number in the paper is generated from the committed run
+outputs by \texttt{analyze.py} and \texttt{paper/make\_numbers.py}.
