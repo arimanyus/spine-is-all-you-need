@@ -144,8 +144,15 @@ def main():
         print(rec["status"], "-", msg[:300])
         return
     rec["load_s"] = round(time.perf_counter() - t0, 2)
+    rec["revision"] = getattr(model.config, "_commit_hash", None)
     rec["params_B"] = round(sum(p.numel() for p in model.parameters()) / 1e9, 3)
     rec["rss_after_load_gb"] = round(peak_rss_gb(), 3)
+
+    # Qwen3-style hybrid models: disable thinking so the verdict is the first generated token.
+    template_kwargs = {}
+    if tok.chat_template and "enable_thinking" in tok.chat_template:
+        template_kwargs["enable_thinking"] = False
+    rec["enable_thinking"] = template_kwargs.get("enable_thinking", "n/a (template has no thinking switch)")
 
     # Token ids for the verdict letters (first token of " A"/"A" etc.).
     letter_ids = {}
@@ -156,7 +163,7 @@ def main():
 
     prompts = build_prompts(args.n + 1)  # +1 for the warmup prompt
     enc = [
-        tok.apply_chat_template(p, add_generation_prompt=True, return_tensors="pt")
+        tok.apply_chat_template(p, add_generation_prompt=True, return_tensors="pt", **template_kwargs)
         for p in prompts
     ]
     rec["prompt_tokens_mean"] = round(statistics.mean(e.shape[1] for e in enc[1:]), 1)

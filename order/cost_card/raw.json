@@ -20,583 +20,1401 @@
     "total_bytes": 1393033,
     "how_checked": "HfApi().dataset_info(files_metadata=True); not downloaded"
   },
+  "candidates_hub_metadata": [
+    {
+      "model": "Qwen/Qwen3-0.6B",
+      "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "gated": false,
+      "safetensors_gb": 1.5,
+      "outcome": "measured"
+    },
+    {
+      "model": "Qwen/Qwen3-1.7B",
+      "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+      "gated": false,
+      "safetensors_gb": 4.06,
+      "outcome": "measured"
+    },
+    {
+      "model": "Qwen/Qwen3-4B",
+      "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+      "gated": false,
+      "safetensors_gb": 8.04,
+      "outcome": "measured"
+    },
+    {
+      "model": "microsoft/Phi-4-mini-instruct",
+      "revision": "cfbefacb99257ffa30c83adab238a50856ac3083",
+      "gated": false,
+      "safetensors_gb": 7.67,
+      "outcome": "measured"
+    },
+    {
+      "model": "Qwen/Qwen3-8B",
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "gated": false,
+      "safetensors_gb": 16.38,
+      "outcome": "does not fit in RAM; measured anyway via mmap thrashing (see Fit note)"
+    },
+    {
+      "model": "Qwen/Qwen3-4B-Instruct-2507",
+      "revision": "cdbee75f17c01a7cc42f958dc650907174af0554",
+      "gated": false,
+      "safetensors_gb": 8.04,
+      "outcome": "not measured: optional; same size class as Qwen3-4B"
+    },
+    {
+      "model": "Qwen/Qwen3.5-0.8B / 2B / 4B",
+      "revision": "main",
+      "gated": false,
+      "safetensors_gb": null,
+      "outcome": "not measured: `qwen3_5` multimodal architecture needs transformers>=5; this repo pins <5"
+    },
+    {
+      "model": "HuggingFaceTB/SmolLM3-3B",
+      "revision": "a07cc9a04f16550a088caea529712d1d335b0ac1",
+      "gated": false,
+      "safetensors_gb": 6.15,
+      "outcome": "not measured: optional"
+    },
+    {
+      "model": "google/gemma-3-4b-it",
+      "revision": "093f9f388b31de276ce2de164bdc2081324b9767",
+      "gated": "manual",
+      "safetensors_gb": 8.6,
+      "outcome": "gated, skipped"
+    },
+    {
+      "model": "meta-llama/Llama-3.2-3B-Instruct",
+      "revision": "0cb88a4f764b7a12671c53f0838cd831a0843b95",
+      "gated": "manual",
+      "safetensors_gb": 6.43,
+      "outcome": "gated, not measured (401 without token)"
+    }
+  ],
+  "gpu_estimate": {
+    "label": "list-price estimate, nothing paid, not measured",
+    "judge": "Qwen/Qwen3-32B (ungated, rev 9216db5781bf21249d130ec9da846c4624c16137, 65.52 GB bf16 safetensors)",
+    "gpu": "1x NVIDIA H100 PCIe 80 GB (Lambda on-demand)",
+    "price_usd_per_hr": 3.29,
+    "price_source": "https://lambda.ai/service/gpu-cloud (1x table, 'NVIDIA H100 PCIe', $3.29/GPU/hr plus tax; fetched 2026-10-23)",
+    "calls": 480,
+    "assumed_s_per_call": 1.0,
+    "throughput_assumption": "Assumed 1.0 s/call as a conservative ceiling: 600-token prefill on a 32B dense bf16 model is ~3.8e13 FLOP, ~0.1 s at 35% of H100 bf16 peak; 2 decode tokens are memory-bound, ~0.04 s at 3.35 TB/s over 65 GB. 1 s/call leaves ~5x margin for an unoptimised HF transformers loop. Not benchmarked.",
+    "overhead_assumption": "Instance boot + 65 GB weight download + load budgeted at 45 min; billing is per minute.",
+    "est_compute_min": 8.0,
+    "est_total_hr": 0.88,
+    "est_cost_usd": 2.9
+  },
   "judges": {
-    "qwen": {
-      "cold": {
-        "model": "Qwen/Qwen2.5-1.5B-Instruct",
-        "n_calls": 10,
-        "threads": 4,
-        "dtype": "bfloat16",
-        "device": "cpu",
-        "python": "3.12.3",
-        "status": "ok",
-        "torch": "2.14.1+cpu",
-        "transformers": "4.57.6",
-        "load_s": 4.31,
-        "params_B": 1.544,
-        "rss_after_load_gb": 1.288,
-        "letter_token_ids": {
-          "A": 32,
-          "B": 33,
-          "C": 34
-        },
-        "prompt_tokens_mean": 520.3,
-        "prompt_tokens_min": 458,
-        "prompt_tokens_max": 592,
-        "mean_s_per_call": 1.16,
-        "p95_s_per_call": 1.267,
-        "min_s_per_call": 1.059,
-        "max_s_per_call": 1.267,
-        "parse_rate": 1.0,
-        "peak_rss_gb": 3.828,
-        "calls": [
-          {
-            "s": 1.149,
-            "prompt_tokens": 519,
-            "logprobs": {
-              "A": -0.9886,
-              "B": -0.9886,
-              "C": -1.3636
-            },
-            "output": "A",
-            "parsed": "A"
+    "new": {
+      "qwen3-0.6b": {
+        "warm": {
+          "model": "Qwen/Qwen3-0.6B",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 0.83,
+          "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+          "params_B": 0.596,
+          "rss_after_load_gb": 0.434,
+          "enable_thinking": false,
+          "letter_token_ids": {
+            "A": 32,
+            "B": 33,
+            "C": 34
           },
-          {
-            "s": 1.177,
-            "prompt_tokens": 503,
-            "logprobs": {
-              "A": -0.827,
-              "B": -0.827,
-              "C": -2.077
+          "prompt_tokens_mean": 524.3,
+          "prompt_tokens_min": 462,
+          "prompt_tokens_max": 596,
+          "mean_s_per_call": 0.616,
+          "p95_s_per_call": 0.702,
+          "min_s_per_call": 0.542,
+          "max_s_per_call": 0.702,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 1.972,
+          "calls": [
+            {
+              "s": 0.614,
+              "prompt_tokens": 523,
+              "logprobs": {
+                "A": -0.1102,
+                "B": -2.3602,
+                "C": -4.6102
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.22,
-            "prompt_tokens": 496,
-            "logprobs": {
-              "A": -0.5862,
-              "B": -1.3362,
-              "C": -1.7112
+            {
+              "s": 0.672,
+              "prompt_tokens": 507,
+              "logprobs": {
+                "A": -0.1027,
+                "B": -2.3527,
+                "C": -5.9777
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.106,
-            "prompt_tokens": 480,
-            "logprobs": {
-              "A": -0.8693,
-              "B": -1.1193,
-              "C": -1.3693
+            {
+              "s": 0.612,
+              "prompt_tokens": 500,
+              "logprobs": {
+                "A": -0.0905,
+                "B": -2.5905,
+                "C": -4.4655
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.267,
-            "prompt_tokens": 592,
-            "logprobs": {
-              "A": -0.124,
-              "B": -3.124,
-              "C": -2.624
+            {
+              "s": 0.576,
+              "prompt_tokens": 484,
+              "logprobs": {
+                "A": -0.1147,
+                "B": -2.3647,
+                "C": -4.2397
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.059,
-            "prompt_tokens": 458,
-            "logprobs": {
-              "A": -1.6803,
-              "B": -0.6803,
-              "C": -1.1803
+            {
+              "s": 0.702,
+              "prompt_tokens": 596,
+              "logprobs": {
+                "A": -0.0691,
+                "B": -2.8191,
+                "C": -4.9441
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "B",
-            "parsed": "B"
-          },
-          {
-            "s": 1.118,
-            "prompt_tokens": 556,
-            "logprobs": {
-              "A": -0.6493,
-              "B": -0.8993,
-              "C": -2.6493
+            {
+              "s": 0.542,
+              "prompt_tokens": 462,
+              "logprobs": {
+                "A": -0.2258,
+                "B": -1.7258,
+                "C": -3.7258
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.172,
-            "prompt_tokens": 548,
-            "logprobs": {
-              "A": -0.6653,
-              "B": -1.4153,
-              "C": -1.4153
+            {
+              "s": 0.617,
+              "prompt_tokens": 560,
+              "logprobs": {
+                "A": -0.1778,
+                "B": -1.9278,
+                "C": -4.0528
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.171,
-            "prompt_tokens": 533,
-            "logprobs": {
-              "A": -0.6941,
-              "B": -0.9441,
-              "C": -2.1941
+            {
+              "s": 0.621,
+              "prompt_tokens": 552,
+              "logprobs": {
+                "A": -0.055,
+                "B": -3.18,
+                "C": -4.43
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.164,
-            "prompt_tokens": 518,
-            "logprobs": {
-              "A": -0.3787,
-              "B": -1.6287,
-              "C": -2.1287
+            {
+              "s": 0.6,
+              "prompt_tokens": 537,
+              "logprobs": {
+                "A": -0.2117,
+                "B": -1.7117,
+                "C": -4.5867
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          }
-        ]
+            {
+              "s": 0.601,
+              "prompt_tokens": 522,
+              "logprobs": {
+                "A": -0.1757,
+                "B": -1.9257,
+                "C": -4.1757
+              },
+              "output": "A",
+              "parsed": "A"
+            }
+          ]
+        }
       },
-      "warm": {
-        "model": "Qwen/Qwen2.5-1.5B-Instruct",
-        "n_calls": 10,
-        "threads": 4,
-        "dtype": "bfloat16",
-        "device": "cpu",
-        "python": "3.12.3",
-        "status": "ok",
-        "torch": "2.14.1+cpu",
-        "transformers": "4.57.6",
-        "load_s": 0.48,
-        "params_B": 1.544,
-        "rss_after_load_gb": 0.395,
-        "letter_token_ids": {
-          "A": 32,
-          "B": 33,
-          "C": 34
-        },
-        "prompt_tokens_mean": 520.3,
-        "prompt_tokens_min": 458,
-        "prompt_tokens_max": 592,
-        "mean_s_per_call": 1.171,
-        "p95_s_per_call": 1.355,
-        "min_s_per_call": 1.067,
-        "max_s_per_call": 1.355,
-        "parse_rate": 1.0,
-        "peak_rss_gb": 3.584,
-        "calls": [
-          {
-            "s": 1.137,
-            "prompt_tokens": 519,
-            "logprobs": {
-              "A": -0.9303,
-              "B": -0.9303,
-              "C": -1.5553
-            },
-            "output": "A",
-            "parsed": "A"
+      "qwen3-1.7b": {
+        "warm": {
+          "model": "Qwen/Qwen3-1.7B",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 0.73,
+          "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+          "params_B": 1.721,
+          "rss_after_load_gb": 0.436,
+          "enable_thinking": false,
+          "letter_token_ids": {
+            "A": 32,
+            "B": 33,
+            "C": 34
           },
-          {
-            "s": 1.069,
-            "prompt_tokens": 503,
-            "logprobs": {
-              "A": -0.827,
-              "B": -0.827,
-              "C": -2.077
+          "prompt_tokens_mean": 524.3,
+          "prompt_tokens_min": 462,
+          "prompt_tokens_max": 596,
+          "mean_s_per_call": 1.27,
+          "p95_s_per_call": 1.579,
+          "min_s_per_call": 1.094,
+          "max_s_per_call": 1.579,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 4.06,
+          "calls": [
+            {
+              "s": 1.342,
+              "prompt_tokens": 523,
+              "logprobs": {
+                "A": -0.0086,
+                "B": -4.7586,
+                "C": -12.2586
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
+            {
+              "s": 1.272,
+              "prompt_tokens": 507,
+              "logprobs": {
+                "A": -0.0111,
+                "B": -4.5111,
+                "C": -10.7611
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.198,
+              "prompt_tokens": 500,
+              "logprobs": {
+                "A": -0.1002,
+                "B": -2.3502,
+                "C": -10.1002
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.155,
+              "prompt_tokens": 484,
+              "logprobs": {
+                "A": -0.0012,
+                "B": -6.7512,
+                "C": -16.2512
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.579,
+              "prompt_tokens": 596,
+              "logprobs": {
+                "A": -0.0384,
+                "B": -3.2884,
+                "C": -8.0384
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.094,
+              "prompt_tokens": 462,
+              "logprobs": {
+                "A": -0.0053,
+                "B": -5.2553,
+                "C": -10.7553
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.287,
+              "prompt_tokens": 560,
+              "logprobs": {
+                "A": -0.0182,
+                "B": -4.0182,
+                "C": -10.5182
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.266,
+              "prompt_tokens": 552,
+              "logprobs": {
+                "A": -0.0386,
+                "B": -3.2886,
+                "C": -7.5386
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.252,
+              "prompt_tokens": 537,
+              "logprobs": {
+                "A": 0.0,
+                "B": -19.75,
+                "C": -17.75
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.257,
+              "prompt_tokens": 522,
+              "logprobs": {
+                "A": -0.0002,
+                "B": -8.5002,
+                "C": -14.0002
+              },
+              "output": "A",
+              "parsed": "A"
+            }
+          ]
+        }
+      },
+      "qwen3-4b": {
+        "warm": {
+          "model": "Qwen/Qwen3-4B",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 0.62,
+          "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+          "params_B": 4.022,
+          "rss_after_load_gb": 0.436,
+          "enable_thinking": false,
+          "letter_token_ids": {
+            "A": 32,
+            "B": 33,
+            "C": 34
           },
-          {
-            "s": 1.086,
-            "prompt_tokens": 496,
-            "logprobs": {
-              "A": -0.5647,
-              "B": -1.3147,
-              "C": -1.8147
+          "prompt_tokens_mean": 524.3,
+          "prompt_tokens_min": 462,
+          "prompt_tokens_max": 596,
+          "mean_s_per_call": 3.083,
+          "p95_s_per_call": 3.614,
+          "min_s_per_call": 2.617,
+          "max_s_per_call": 3.614,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 8.448,
+          "calls": [
+            {
+              "s": 2.983,
+              "prompt_tokens": 523,
+              "logprobs": {
+                "A": -15.5182,
+                "B": -4.0182,
+                "C": -0.0182
+              },
+              "output": "C",
+              "parsed": "C"
             },
-            "output": "A",
-            "parsed": "A"
+            {
+              "s": 2.973,
+              "prompt_tokens": 507,
+              "logprobs": {
+                "A": -12.4514,
+                "B": -0.2014,
+                "C": -1.7014
+              },
+              "output": "B",
+              "parsed": "B"
+            },
+            {
+              "s": 2.684,
+              "prompt_tokens": 500,
+              "logprobs": {
+                "A": -11.0004,
+                "B": -0.0004,
+                "C": -8.0004
+              },
+              "output": "B",
+              "parsed": "B"
+            },
+            {
+              "s": 2.617,
+              "prompt_tokens": 484,
+              "logprobs": {
+                "A": -11.5486,
+                "B": -3.0486,
+                "C": -0.0486
+              },
+              "output": "C",
+              "parsed": "C"
+            },
+            {
+              "s": 3.316,
+              "prompt_tokens": 596,
+              "logprobs": {
+                "A": -13.0232,
+                "B": -3.7732,
+                "C": -0.0232
+              },
+              "output": "C",
+              "parsed": "C"
+            },
+            {
+              "s": 3.179,
+              "prompt_tokens": 462,
+              "logprobs": {
+                "A": -16.5,
+                "B": -14.0,
+                "C": -0.0
+              },
+              "output": "C",
+              "parsed": "C"
+            },
+            {
+              "s": 3.614,
+              "prompt_tokens": 560,
+              "logprobs": {
+                "A": -13.8502,
+                "B": -2.3502,
+                "C": -0.1002
+              },
+              "output": "C",
+              "parsed": "C"
+            },
+            {
+              "s": 3.292,
+              "prompt_tokens": 552,
+              "logprobs": {
+                "A": -13.5009,
+                "B": -7.0009,
+                "C": -0.0009
+              },
+              "output": "C",
+              "parsed": "C"
+            },
+            {
+              "s": 3.124,
+              "prompt_tokens": 537,
+              "logprobs": {
+                "A": -10.5381,
+                "B": -0.0381,
+                "C": -3.2881
+              },
+              "output": "B",
+              "parsed": "B"
+            },
+            {
+              "s": 3.052,
+              "prompt_tokens": 522,
+              "logprobs": {
+                "A": -9.9432,
+                "B": -0.6932,
+                "C": -0.6932
+              },
+              "output": "C",
+              "parsed": "C"
+            }
+          ]
+        }
+      },
+      "phi4-mini": {
+        "warm": {
+          "model": "microsoft/Phi-4-mini-instruct",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 0.7,
+          "revision": "cfbefacb99257ffa30c83adab238a50856ac3083",
+          "params_B": 3.836,
+          "rss_after_load_gb": 0.475,
+          "enable_thinking": "n/a (template has no thinking switch)",
+          "letter_token_ids": {
+            "A": 32,
+            "B": 33,
+            "C": 34
           },
-          {
-            "s": 1.067,
-            "prompt_tokens": 480,
-            "logprobs": {
-              "A": -0.8115,
-              "B": -1.0615,
-              "C": -1.5615
+          "prompt_tokens_mean": 509.6,
+          "prompt_tokens_min": 448,
+          "prompt_tokens_max": 580,
+          "mean_s_per_call": 2.396,
+          "p95_s_per_call": 2.576,
+          "min_s_per_call": 2.092,
+          "max_s_per_call": 2.576,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 8.125,
+          "calls": [
+            {
+              "s": 2.572,
+              "prompt_tokens": 508,
+              "logprobs": {
+                "A": -1.2457,
+                "B": -2.4957,
+                "C": -0.4957
+              },
+              "output": "C (",
+              "parsed": "C"
             },
-            "output": "A",
-            "parsed": "A"
+            {
+              "s": 2.365,
+              "prompt_tokens": 492,
+              "logprobs": {
+                "A": -0.7464,
+                "B": -1.9964,
+                "C": -0.9964
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 2.325,
+              "prompt_tokens": 485,
+              "logprobs": {
+                "A": -0.3729,
+                "B": -2.3729,
+                "C": -1.6229
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 2.191,
+              "prompt_tokens": 469,
+              "logprobs": {
+                "A": -0.6887,
+                "B": -2.6887,
+                "C": -0.9387
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 2.576,
+              "prompt_tokens": 580,
+              "logprobs": {
+                "A": -1.0445,
+                "B": -1.2945,
+                "C": -1.0445
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 2.092,
+              "prompt_tokens": 448,
+              "logprobs": {
+                "A": -0.2957,
+                "B": -2.5457,
+                "C": -2.0457
+              },
+              "output": "A\n\n",
+              "parsed": "A"
+            },
+            {
+              "s": 2.45,
+              "prompt_tokens": 545,
+              "logprobs": {
+                "A": -1.0307,
+                "B": -1.7807,
+                "C": -0.7807
+              },
+              "output": "C (",
+              "parsed": "C"
+            },
+            {
+              "s": 2.573,
+              "prompt_tokens": 540,
+              "logprobs": {
+                "A": -0.789,
+                "B": -1.039,
+                "C": -1.789
+              },
+              "output": "A\n\n",
+              "parsed": "A"
+            },
+            {
+              "s": 2.383,
+              "prompt_tokens": 522,
+              "logprobs": {
+                "A": -1.0356,
+                "B": -1.7856,
+                "C": -0.7856
+              },
+              "output": "C (",
+              "parsed": "C"
+            },
+            {
+              "s": 2.437,
+              "prompt_tokens": 507,
+              "logprobs": {
+                "A": -0.5682,
+                "B": -2.5682,
+                "C": -1.0682
+              },
+              "output": "A",
+              "parsed": "A"
+            }
+          ]
+        }
+      },
+      "qwen3-8b": {
+        "cold": {
+          "model": "Qwen/Qwen3-8B",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 14.69,
+          "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+          "params_B": 8.191,
+          "rss_after_load_gb": 2.302,
+          "enable_thinking": false,
+          "letter_token_ids": {
+            "A": 32,
+            "B": 33,
+            "C": 34
           },
-          {
-            "s": 1.355,
-            "prompt_tokens": 592,
-            "logprobs": {
-              "A": -0.1969,
-              "B": -2.6969,
-              "C": -2.1969
+          "prompt_tokens_mean": 524.3,
+          "prompt_tokens_min": 462,
+          "prompt_tokens_max": 596,
+          "mean_s_per_call": 65.957,
+          "p95_s_per_call": 77.81,
+          "min_s_per_call": 46.288,
+          "max_s_per_call": 77.81,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 14.456,
+          "calls": [
+            {
+              "s": 46.288,
+              "prompt_tokens": 523,
+              "logprobs": {
+                "A": -0.3139,
+                "B": -7.3139,
+                "C": -1.3139
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.097,
-            "prompt_tokens": 458,
-            "logprobs": {
-              "A": -1.8147,
-              "B": -0.5647,
-              "C": -1.3147
+            {
+              "s": 51.162,
+              "prompt_tokens": 507,
+              "logprobs": {
+                "A": -0.6932,
+                "B": -10.9432,
+                "C": -0.6932
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "B",
-            "parsed": "B"
-          },
-          {
-            "s": 1.182,
-            "prompt_tokens": 556,
-            "logprobs": {
-              "A": -0.7671,
-              "B": -0.7671,
-              "C": -2.6421
+            {
+              "s": 48.091,
+              "prompt_tokens": 500,
+              "logprobs": {
+                "A": -0.1659,
+                "B": -5.1659,
+                "C": -1.9159
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.283,
-            "prompt_tokens": 548,
-            "logprobs": {
-              "A": -0.5794,
-              "B": -1.4544,
-              "C": -1.5794
+            {
+              "s": 63.88,
+              "prompt_tokens": 484,
+              "logprobs": {
+                "A": -0.3133,
+                "B": -11.8133,
+                "C": -1.3133
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.289,
-            "prompt_tokens": 533,
-            "logprobs": {
-              "A": -0.6692,
-              "B": -0.9192,
-              "C": -2.4192
+            {
+              "s": 68.154,
+              "prompt_tokens": 596,
+              "logprobs": {
+                "A": -2.812,
+                "B": -11.562,
+                "C": -0.062
+              },
+              "output": "C",
+              "parsed": "C"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 1.141,
-            "prompt_tokens": 518,
-            "logprobs": {
-              "A": -0.3553,
-              "B": -1.7303,
-              "C": -2.1053
+            {
+              "s": 75.883,
+              "prompt_tokens": 462,
+              "logprobs": {
+                "A": -0.1007,
+                "B": -7.6007,
+                "C": -2.3507
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          }
-        ]
+            {
+              "s": 77.108,
+              "prompt_tokens": 560,
+              "logprobs": {
+                "A": -0.6944,
+                "B": -6.6944,
+                "C": -0.6944
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 77.81,
+              "prompt_tokens": 552,
+              "logprobs": {
+                "A": -0.8261,
+                "B": -8.8261,
+                "C": -0.5761
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 75.946,
+              "prompt_tokens": 537,
+              "logprobs": {
+                "A": -0.8261,
+                "B": -8.5761,
+                "C": -0.5761
+              },
+              "output": "C",
+              "parsed": "C"
+            },
+            {
+              "s": 75.245,
+              "prompt_tokens": 522,
+              "logprobs": {
+                "A": -0.252,
+                "B": -9.502,
+                "C": -1.502
+              },
+              "output": "A",
+              "parsed": "A"
+            }
+          ]
+        }
       }
     },
-    "llama": {
-      "cold": {
-        "model": "meta-llama/Llama-3.2-3B-Instruct",
-        "n_calls": 10,
-        "threads": 4,
-        "dtype": "bfloat16",
-        "device": "cpu",
-        "python": "3.12.3",
-        "status": "gated, not measured",
-        "torch": "2.14.1+cpu",
-        "transformers": "4.57.6",
-        "error": "OSError: You are trying to access a gated repo.\nMake sure to have access to it at https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct.\n401 Client Error. (Request ID: Root=1-6adb15d6-17f1b77c1982becc217b2284;d9aef4c2-097e-4108-add8-9df857113057)\n\nCannot access gated repo for url https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json.\nAccess to model meta-llama/Llama-3.2-3B-Instruct is restricted. You must have access to it and be authenticated to access it. Please log in."
-      }
-    },
-    "phi": {
-      "cold": {
-        "model": "microsoft/Phi-3.5-mini-instruct",
-        "n_calls": 10,
-        "threads": 4,
-        "dtype": "bfloat16",
-        "device": "cpu",
-        "python": "3.12.3",
-        "status": "ok",
-        "torch": "2.14.1+cpu",
-        "transformers": "4.57.6",
-        "load_s": 7.34,
-        "params_B": 3.821,
-        "rss_after_load_gb": 1.661,
-        "letter_token_ids": {
-          "A": 319,
-          "B": 350,
-          "C": 315
+    "baseline": {
+      "qwen2.5-1.5b": {
+        "cold": {
+          "model": "Qwen/Qwen2.5-1.5B-Instruct",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 4.31,
+          "params_B": 1.544,
+          "rss_after_load_gb": 1.288,
+          "letter_token_ids": {
+            "A": 32,
+            "B": 33,
+            "C": 34
+          },
+          "prompt_tokens_mean": 520.3,
+          "prompt_tokens_min": 458,
+          "prompt_tokens_max": 592,
+          "mean_s_per_call": 1.16,
+          "p95_s_per_call": 1.267,
+          "min_s_per_call": 1.059,
+          "max_s_per_call": 1.267,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 3.828,
+          "calls": [
+            {
+              "s": 1.149,
+              "prompt_tokens": 519,
+              "logprobs": {
+                "A": -0.9886,
+                "B": -0.9886,
+                "C": -1.3636
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.177,
+              "prompt_tokens": 503,
+              "logprobs": {
+                "A": -0.827,
+                "B": -0.827,
+                "C": -2.077
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.22,
+              "prompt_tokens": 496,
+              "logprobs": {
+                "A": -0.5862,
+                "B": -1.3362,
+                "C": -1.7112
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.106,
+              "prompt_tokens": 480,
+              "logprobs": {
+                "A": -0.8693,
+                "B": -1.1193,
+                "C": -1.3693
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.267,
+              "prompt_tokens": 592,
+              "logprobs": {
+                "A": -0.124,
+                "B": -3.124,
+                "C": -2.624
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.059,
+              "prompt_tokens": 458,
+              "logprobs": {
+                "A": -1.6803,
+                "B": -0.6803,
+                "C": -1.1803
+              },
+              "output": "B",
+              "parsed": "B"
+            },
+            {
+              "s": 1.118,
+              "prompt_tokens": 556,
+              "logprobs": {
+                "A": -0.6493,
+                "B": -0.8993,
+                "C": -2.6493
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.172,
+              "prompt_tokens": 548,
+              "logprobs": {
+                "A": -0.6653,
+                "B": -1.4153,
+                "C": -1.4153
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.171,
+              "prompt_tokens": 533,
+              "logprobs": {
+                "A": -0.6941,
+                "B": -0.9441,
+                "C": -2.1941
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 1.164,
+              "prompt_tokens": 518,
+              "logprobs": {
+                "A": -0.3787,
+                "B": -1.6287,
+                "C": -2.1287
+              },
+              "output": "A",
+              "parsed": "A"
+            }
+          ],
+          "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+          "revision_source": "recovered post hoc from the single HF cache snapshot dir used by this run"
         },
-        "prompt_tokens_mean": 544.8,
-        "prompt_tokens_min": 492,
-        "prompt_tokens_max": 616,
-        "mean_s_per_call": 4.616,
-        "p95_s_per_call": 11.103,
-        "min_s_per_call": 2.536,
-        "max_s_per_call": 11.103,
-        "parse_rate": 1.0,
-        "peak_rss_gb": 8.689,
-        "calls": [
-          {
-            "s": 11.103,
-            "prompt_tokens": 539,
-            "logprobs": {
-              "A": -3.2881,
-              "B": -0.0381,
-              "C": -12.2881
-            },
-            "output": "B",
-            "parsed": "B"
+        "warm": {
+          "model": "Qwen/Qwen2.5-1.5B-Instruct",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 0.48,
+          "params_B": 1.544,
+          "rss_after_load_gb": 0.395,
+          "letter_token_ids": {
+            "A": 32,
+            "B": 33,
+            "C": 34
           },
-          {
-            "s": 10.771,
-            "prompt_tokens": 527,
-            "logprobs": {
-              "A": -0.0187,
-              "B": -4.0187,
-              "C": -13.5187
+          "prompt_tokens_mean": 520.3,
+          "prompt_tokens_min": 458,
+          "prompt_tokens_max": 592,
+          "mean_s_per_call": 1.171,
+          "p95_s_per_call": 1.355,
+          "min_s_per_call": 1.067,
+          "max_s_per_call": 1.355,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 3.584,
+          "calls": [
+            {
+              "s": 1.137,
+              "prompt_tokens": 519,
+              "logprobs": {
+                "A": -0.9303,
+                "B": -0.9303,
+                "C": -1.5553
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 3.266,
-            "prompt_tokens": 521,
-            "logprobs": {
-              "A": -4.7588,
-              "B": -0.0088,
-              "C": -8.7588
+            {
+              "s": 1.069,
+              "prompt_tokens": 503,
+              "logprobs": {
+                "A": -0.827,
+                "B": -0.827,
+                "C": -2.077
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "B\n",
-            "parsed": "B"
-          },
-          {
-            "s": 2.917,
-            "prompt_tokens": 499,
-            "logprobs": {
-              "A": -0.004,
-              "B": -6.004,
-              "C": -11.754
+            {
+              "s": 1.086,
+              "prompt_tokens": 496,
+              "logprobs": {
+                "A": -0.5647,
+                "B": -1.3147,
+                "C": -1.8147
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 4.501,
-            "prompt_tokens": 616,
-            "logprobs": {
-              "A": -0.2531,
-              "B": -1.5031,
-              "C": -12.7531
+            {
+              "s": 1.067,
+              "prompt_tokens": 480,
+              "logprobs": {
+                "A": -0.8115,
+                "B": -1.0615,
+                "C": -1.5615
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A or",
-            "parsed": "A"
-          },
-          {
-            "s": 2.7,
-            "prompt_tokens": 492,
-            "logprobs": {
-              "A": -1.913,
-              "B": -0.163,
-              "C": -5.913
+            {
+              "s": 1.355,
+              "prompt_tokens": 592,
+              "logprobs": {
+                "A": -0.1969,
+                "B": -2.6969,
+                "C": -2.1969
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "B\n",
-            "parsed": "B"
-          },
-          {
-            "s": 2.769,
-            "prompt_tokens": 579,
-            "logprobs": {
-              "A": -0.1007,
-              "B": -2.3507,
-              "C": -11.3507
+            {
+              "s": 1.097,
+              "prompt_tokens": 458,
+              "logprobs": {
+                "A": -1.8147,
+                "B": -0.5647,
+                "C": -1.3147
+              },
+              "output": "B",
+              "parsed": "B"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 2.814,
-            "prompt_tokens": 581,
-            "logprobs": {
-              "A": -2.3506,
-              "B": -0.1006,
-              "C": -11.6006
+            {
+              "s": 1.182,
+              "prompt_tokens": 556,
+              "logprobs": {
+                "A": -0.7671,
+                "B": -0.7671,
+                "C": -2.6421
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "B\n",
-            "parsed": "B"
-          },
-          {
-            "s": 2.78,
-            "prompt_tokens": 556,
-            "logprobs": {
-              "A": 0.0,
-              "B": -19.75,
-              "C": -21.75
+            {
+              "s": 1.283,
+              "prompt_tokens": 548,
+              "logprobs": {
+                "A": -0.5794,
+                "B": -1.4544,
+                "C": -1.5794
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 2.536,
-            "prompt_tokens": 538,
-            "logprobs": {
-              "A": -0.2522,
-              "B": -1.5022,
-              "C": -13.0022
+            {
+              "s": 1.289,
+              "prompt_tokens": 533,
+              "logprobs": {
+                "A": -0.6692,
+                "B": -0.9192,
+                "C": -2.4192
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          }
-        ]
+            {
+              "s": 1.141,
+              "prompt_tokens": 518,
+              "logprobs": {
+                "A": -0.3553,
+                "B": -1.7303,
+                "C": -2.1053
+              },
+              "output": "A",
+              "parsed": "A"
+            }
+          ],
+          "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+          "revision_source": "recovered post hoc from the single HF cache snapshot dir used by this run"
+        }
       },
-      "warm": {
-        "model": "microsoft/Phi-3.5-mini-instruct",
-        "n_calls": 10,
-        "threads": 4,
-        "dtype": "bfloat16",
-        "device": "cpu",
-        "python": "3.12.3",
-        "status": "ok",
-        "torch": "2.14.1+cpu",
-        "transformers": "4.57.6",
-        "load_s": 0.34,
-        "params_B": 3.821,
-        "rss_after_load_gb": 0.352,
-        "letter_token_ids": {
-          "A": 319,
-          "B": 350,
-          "C": 315
+      "llama3.2-3b": {
+        "cold": {
+          "model": "meta-llama/Llama-3.2-3B-Instruct",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "gated, not measured",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "error": "OSError: You are trying to access a gated repo.\nMake sure to have access to it at https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct.\n401 Client Error. (Request ID: Root=1-6adb15d6-17f1b77c1982becc217b2284;d9aef4c2-097e-4108-add8-9df857113057)\n\nCannot access gated repo for url https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json.\nAccess to model meta-llama/Llama-3.2-3B-Instruct is restricted. You must have access to it and be authenticated to access it. Please log in."
+        }
+      },
+      "phi3.5-mini": {
+        "cold": {
+          "model": "microsoft/Phi-3.5-mini-instruct",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 7.34,
+          "params_B": 3.821,
+          "rss_after_load_gb": 1.661,
+          "letter_token_ids": {
+            "A": 319,
+            "B": 350,
+            "C": 315
+          },
+          "prompt_tokens_mean": 544.8,
+          "prompt_tokens_min": 492,
+          "prompt_tokens_max": 616,
+          "mean_s_per_call": 4.616,
+          "p95_s_per_call": 11.103,
+          "min_s_per_call": 2.536,
+          "max_s_per_call": 11.103,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 8.689,
+          "calls": [
+            {
+              "s": 11.103,
+              "prompt_tokens": 539,
+              "logprobs": {
+                "A": -3.2881,
+                "B": -0.0381,
+                "C": -12.2881
+              },
+              "output": "B",
+              "parsed": "B"
+            },
+            {
+              "s": 10.771,
+              "prompt_tokens": 527,
+              "logprobs": {
+                "A": -0.0187,
+                "B": -4.0187,
+                "C": -13.5187
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 3.266,
+              "prompt_tokens": 521,
+              "logprobs": {
+                "A": -4.7588,
+                "B": -0.0088,
+                "C": -8.7588
+              },
+              "output": "B\n",
+              "parsed": "B"
+            },
+            {
+              "s": 2.917,
+              "prompt_tokens": 499,
+              "logprobs": {
+                "A": -0.004,
+                "B": -6.004,
+                "C": -11.754
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 4.501,
+              "prompt_tokens": 616,
+              "logprobs": {
+                "A": -0.2531,
+                "B": -1.5031,
+                "C": -12.7531
+              },
+              "output": "A or",
+              "parsed": "A"
+            },
+            {
+              "s": 2.7,
+              "prompt_tokens": 492,
+              "logprobs": {
+                "A": -1.913,
+                "B": -0.163,
+                "C": -5.913
+              },
+              "output": "B\n",
+              "parsed": "B"
+            },
+            {
+              "s": 2.769,
+              "prompt_tokens": 579,
+              "logprobs": {
+                "A": -0.1007,
+                "B": -2.3507,
+                "C": -11.3507
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 2.814,
+              "prompt_tokens": 581,
+              "logprobs": {
+                "A": -2.3506,
+                "B": -0.1006,
+                "C": -11.6006
+              },
+              "output": "B\n",
+              "parsed": "B"
+            },
+            {
+              "s": 2.78,
+              "prompt_tokens": 556,
+              "logprobs": {
+                "A": 0.0,
+                "B": -19.75,
+                "C": -21.75
+              },
+              "output": "A",
+              "parsed": "A"
+            },
+            {
+              "s": 2.536,
+              "prompt_tokens": 538,
+              "logprobs": {
+                "A": -0.2522,
+                "B": -1.5022,
+                "C": -13.0022
+              },
+              "output": "A",
+              "parsed": "A"
+            }
+          ],
+          "revision": "2fe192450127e6a83f7441aef6e3ca586c338b77",
+          "revision_source": "recovered post hoc from the single HF cache snapshot dir used by this run"
         },
-        "prompt_tokens_mean": 544.8,
-        "prompt_tokens_min": 492,
-        "prompt_tokens_max": 616,
-        "mean_s_per_call": 2.625,
-        "p95_s_per_call": 2.872,
-        "min_s_per_call": 2.44,
-        "max_s_per_call": 2.872,
-        "parse_rate": 1.0,
-        "peak_rss_gb": 8.265,
-        "calls": [
-          {
-            "s": 2.693,
-            "prompt_tokens": 539,
-            "logprobs": {
-              "A": -2.5789,
-              "B": -0.0789,
-              "C": -12.0789
-            },
-            "output": "B",
-            "parsed": "B"
+        "warm": {
+          "model": "microsoft/Phi-3.5-mini-instruct",
+          "n_calls": 10,
+          "threads": 4,
+          "dtype": "bfloat16",
+          "device": "cpu",
+          "python": "3.12.3",
+          "status": "ok",
+          "torch": "2.14.1+cpu",
+          "transformers": "4.57.6",
+          "load_s": 0.34,
+          "params_B": 3.821,
+          "rss_after_load_gb": 0.352,
+          "letter_token_ids": {
+            "A": 319,
+            "B": 350,
+            "C": 315
           },
-          {
-            "s": 2.527,
-            "prompt_tokens": 527,
-            "logprobs": {
-              "A": -0.0303,
-              "B": -3.5303,
-              "C": -12.5303
+          "prompt_tokens_mean": 544.8,
+          "prompt_tokens_min": 492,
+          "prompt_tokens_max": 616,
+          "mean_s_per_call": 2.625,
+          "p95_s_per_call": 2.872,
+          "min_s_per_call": 2.44,
+          "max_s_per_call": 2.872,
+          "parse_rate": 1.0,
+          "peak_rss_gb": 8.265,
+          "calls": [
+            {
+              "s": 2.693,
+              "prompt_tokens": 539,
+              "logprobs": {
+                "A": -2.5789,
+                "B": -0.0789,
+                "C": -12.0789
+              },
+              "output": "B",
+              "parsed": "B"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 2.51,
-            "prompt_tokens": 521,
-            "logprobs": {
-              "A": -5.2553,
-              "B": -0.0053,
-              "C": -10.0053
+            {
+              "s": 2.527,
+              "prompt_tokens": 527,
+              "logprobs": {
+                "A": -0.0303,
+                "B": -3.5303,
+                "C": -12.5303
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "B\n",
-            "parsed": "B"
-          },
-          {
-            "s": 2.44,
-            "prompt_tokens": 499,
-            "logprobs": {
-              "A": -0.005,
-              "B": -6.005,
-              "C": -11.755
+            {
+              "s": 2.51,
+              "prompt_tokens": 521,
+              "logprobs": {
+                "A": -5.2553,
+                "B": -0.0053,
+                "C": -10.0053
+              },
+              "output": "B\n",
+              "parsed": "B"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 2.872,
-            "prompt_tokens": 616,
-            "logprobs": {
-              "A": -0.3139,
-              "B": -1.3139,
-              "C": -13.0639
+            {
+              "s": 2.44,
+              "prompt_tokens": 499,
+              "logprobs": {
+                "A": -0.005,
+                "B": -6.005,
+                "C": -11.755
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A or",
-            "parsed": "A"
-          },
-          {
-            "s": 2.461,
-            "prompt_tokens": 492,
-            "logprobs": {
-              "A": -2.1298,
-              "B": -0.1298,
-              "C": -5.8798
+            {
+              "s": 2.872,
+              "prompt_tokens": 616,
+              "logprobs": {
+                "A": -0.3139,
+                "B": -1.3139,
+                "C": -13.0639
+              },
+              "output": "A or",
+              "parsed": "A"
             },
-            "output": "B\n",
-            "parsed": "B"
-          },
-          {
-            "s": 2.738,
-            "prompt_tokens": 579,
-            "logprobs": {
-              "A": -0.1009,
-              "B": -2.3509,
-              "C": -10.8509
+            {
+              "s": 2.461,
+              "prompt_tokens": 492,
+              "logprobs": {
+                "A": -2.1298,
+                "B": -0.1298,
+                "C": -5.8798
+              },
+              "output": "B\n",
+              "parsed": "B"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 2.802,
-            "prompt_tokens": 581,
-            "logprobs": {
-              "A": -2.8124,
-              "B": -0.0624,
-              "C": -11.3124
+            {
+              "s": 2.738,
+              "prompt_tokens": 579,
+              "logprobs": {
+                "A": -0.1009,
+                "B": -2.3509,
+                "C": -10.8509
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "B\n",
-            "parsed": "B"
-          },
-          {
-            "s": 2.591,
-            "prompt_tokens": 556,
-            "logprobs": {
-              "A": 0.0,
-              "B": -20.0,
-              "C": -22.25
+            {
+              "s": 2.802,
+              "prompt_tokens": 581,
+              "logprobs": {
+                "A": -2.8124,
+                "B": -0.0624,
+                "C": -11.3124
+              },
+              "output": "B\n",
+              "parsed": "B"
             },
-            "output": "A",
-            "parsed": "A"
-          },
-          {
-            "s": 2.617,
-            "prompt_tokens": 538,
-            "logprobs": {
-              "A": -0.1272,
-              "B": -2.1272,
-              "C": -12.6272
+            {
+              "s": 2.591,
+              "prompt_tokens": 556,
+              "logprobs": {
+                "A": 0.0,
+                "B": -20.0,
+                "C": -22.25
+              },
+              "output": "A",
+              "parsed": "A"
             },
-            "output": "A",
-            "parsed": "A"
-          }
-        ]
+            {
+              "s": 2.617,
+              "prompt_tokens": 538,
+              "logprobs": {
+                "A": -0.1272,
+                "B": -2.1272,
+                "C": -12.6272
+              },
+              "output": "A",
+              "parsed": "A"
+            }
+          ],
+          "revision": "2fe192450127e6a83f7441aef6e3ca586c338b77",
+          "revision_source": "recovered post hoc from the single HF cache snapshot dir used by this run"
+        }
       }
     }
   }
