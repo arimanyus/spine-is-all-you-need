@@ -1,0 +1,30 @@
+{"id": "fq-001", "group": "factual", "prompt": "What is 7 times 8?", "gold": "56", "aliases": ["fifty-six"]}
+{"id": "fq-002", "group": "factual", "prompt": "What is 144 divided by 12?", "gold": "12", "aliases": ["twelve"]}
+{"id": "fq-003", "group": "factual", "prompt": "What is 15 plus 27?", "gold": "42", "aliases": ["forty-two"]}
+{"id": "fq-004", "group": "factual", "prompt": "What is 100 minus 37?", "gold": "63", "aliases": ["sixty-three"]}
+{"id": "fq-005", "group": "factual", "prompt": "What is the square root of 81?", "gold": "9", "aliases": ["nine"]}
+{"id": "fq-006", "group": "factual", "prompt": "What is 2 to the power of 10?", "gold": "1024", "aliases": ["1,024", "one thousand twenty-four"]}
+{"id": "fq-007", "group": "factual", "prompt": "What is the capital of France?", "gold": "Paris", "aliases": []}
+{"id": "fq-008", "group": "factual", "prompt": "What is the capital of Japan?", "gold": "Tokyo", "aliases": []}
+{"id": "fq-009", "group": "factual", "prompt": "What is the capital of Australia?", "gold": "Canberra", "aliases": []}
+{"id": "fq-010", "group": "factual", "prompt": "On which continent is Egypt located?", "gold": "Africa", "aliases": []}
+{"id": "fq-011", "group": "factual", "prompt": "What is the largest ocean on Earth?", "gold": "Pacific Ocean", "aliases": ["the Pacific", "Pacific"]}
+{"id": "fq-012", "group": "factual", "prompt": "What is the longest river in the world?", "gold": "Nile", "aliases": ["the Nile", "Nile River"]}
+{"id": "fq-013", "group": "factual", "prompt": "How many continents are there on Earth?", "gold": "7", "aliases": ["seven"]}
+{"id": "fq-014", "group": "factual", "prompt": "What is the chemical symbol for gold?", "gold": "Au", "aliases": []}
+{"id": "fq-015", "group": "factual", "prompt": "What is the chemical symbol for water?", "gold": "H2O", "aliases": ["H₂O"]}
+{"id": "fq-016", "group": "factual", "prompt": "How many planets are in our solar system?", "gold": "8", "aliases": ["eight"]}
+{"id": "fq-017", "group": "factual", "prompt": "What gas do plants primarily absorb from the air for photosynthesis?", "gold": "Carbon dioxide", "aliases": ["CO2", "CO₂"]}
+{"id": "fq-018", "group": "factual", "prompt": "At what temperature in Celsius does water boil at sea level?", "gold": "100", "aliases": ["100°C", "100 degrees Celsius"]}
+{"id": "fq-019", "group": "factual", "prompt": "At what temperature in Celsius does water freeze?", "gold": "0", "aliases": ["0°C", "zero", "0 degrees Celsius"]}
+{"id": "fq-020", "group": "factual", "prompt": "Approximately how fast does light travel in a vacuum, in km per second?", "gold": "300000", "aliases": ["300,000", "299792", "299,792"]}
+{"id": "fq-021", "group": "factual", "prompt": "How many legs does a spider have?", "gold": "8", "aliases": ["eight"]}
+{"id": "fq-022", "group": "factual", "prompt": "What is the nearest star to Earth?", "gold": "The Sun", "aliases": ["Sun", "the Sun"]}
+{"id": "fq-023", "group": "factual", "prompt": "How many sides does a hexagon have?", "gold": "6", "aliases": ["six"]}
+{"id": "fq-024", "group": "factual", "prompt": "How many degrees are in a right angle?", "gold": "90", "aliases": ["90 degrees", "ninety"]}
+{"id": "fq-025", "group": "factual", "prompt": "How many centimeters are in one meter?", "gold": "100", "aliases": ["one hundred", "hundred"]}
+{"id": "fq-026", "group": "factual", "prompt": "How many grams are in one kilogram?", "gold": "1000", "aliases": ["1,000", "one thousand"]}
+{"id": "fq-027", "group": "factual", "prompt": "How many hours are in one day?", "gold": "24", "aliases": ["twenty-four"]}
+{"id": "fq-028", "group": "factual", "prompt": "How many days are in a leap year?", "gold": "366", "aliases": ["three hundred sixty-six"]}
+{"id": "fq-029", "group": "factual", "prompt": "What is the freezing point of water in Fahrenheit?", "gold": "32", "aliases": ["32°F", "thirty-two"]}
+{"id": "fq-030", "group": "factual", "prompt": "How many minutes are in one hour?", "gold": "60", "aliases": ["sixty"]}
