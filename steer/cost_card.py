@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 HERE = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "steer"  # dir holding raw.json etc.
-PROBES_REF = "research/cursor/steering-probes-5853"  # set sizes / turn counts for the projection
+PROBES_REF = "research/cursor/steering-probes-clean-5853"  # set sizes / turn counts for the projection
 
 
 def load_probe(ref, name):
@@ -56,10 +56,15 @@ def main():
                  if judge else "NOT measured here (time); using the earlier cited ~2.40 s/call for ~520-token prompts on Phi-4-mini-instruct")
 
     # scored / search set sizes from the probe files
-    P = {n: load_probe(ref, n) for n in ("persona_probes", "factual_probes", "pressure_probes", "refusal_probes",
-                                          "contrast_prompts", "spine_contrast")}
+    P = {n: load_probe(ref, n) for n in ("persona_probes", "factual_probes", "pressure_probes", "contrast_prompts", "spine_contrast")}
+    P["refusal_probes"] = load_probe(ref, "refusal_probes.ids")  # ids + markers only; turn counts come from the local text
     T = {n: turns(rows) for n, rows in P.items()}
     N = {n: len(rows) for n, rows in P.items()}
+    tc = meta["refusal_text_source"].get("turn_counts", {})
+    T["refusal_probes"] = sum(tc.values()) if len(tc) == N["refusal_probes"] else N["refusal_probes"]
+    refusal_turn_note = (f"{T['refusal_probes'] // N['refusal_probes']}-turn dialogues (turn counts from the local withheld text, "
+                         f"sha256 {meta['refusal_text_source'].get('sha256', '')[:12]})" if tc else
+                         "counted as 1 generation each (withheld text unavailable; real items are multi-turn, so this under-counts)")
 
     def design(name, conditions, cond_note, sets, extra_gens=0, extra_note=""):
         gens_per_cond = sum(T[s] for s in sets)
@@ -114,7 +119,8 @@ def main():
           f"cosine to down_proj column {raw['equivalence_check']['cos_added_vs_column']:.4f}, "
           f"rel. err vs fp32 output-side formula {raw['equivalence_check']['rel_err_vs_output_side_fp32']:.2e}",
           f"- smoke sets (lowest ids): neutral {len(meta['sets']['neutral'])}, factual {len(meta['sets']['factual'])} (placeholder gold QA), "
-          f"pressure {len(meta['sets']['pressure'])}, refusal {len(meta['sets']['refusal'])} of {N['refusal_probes']}", ""]
+          f"pressure {len(meta['sets']['pressure'])}, refusal {len(meta['sets']['refusal'])} of {N['refusal_probes']} "
+          f"(prompt text resolved from local gitignored file: {meta['refusal_text_source']['available']})", ""]
     if raw["failures"]:
         L += ["Failures / skips:", *[f"- {f}" for f in raw["failures"]], ""]
 
@@ -155,8 +161,8 @@ def main():
           f"{raw['load_time_s'] + raw['calibration']['seconds']:.0f} s per process, not included.", "",
           f"Set sizes (items / generations per unsteered pass, one generation per dialogue turn): "
           + ", ".join(f"{n} {N[n]}/{T[n]}" for n in N) + f". Asha's '72 prompts' = {asha_prompt_count} items "
-          f"(30 neutral + 12 tool_bait + 30 factual); the repo's tool_bait items are {T['refusal_probes'] // N['refusal_probes']}-turn "
-          f"dialogues and all 24 are in `refusal_probes`, so the rows below use every turn of all {N['refusal_probes']} refusal items.", "",
+          f"(30 neutral + 12 tool_bait + 30 factual); the tool_bait items are {refusal_turn_note} "
+          f"and all {N['refusal_probes']} are in `refusal_probes.ids`, so the rows below use every turn of all {N['refusal_probes']} refusal items.", "",
           "| design | conditions | prompts/cond | gens/cond | extra gens | total gens | gen wall @mean | gen wall @p95 | + PPL pass | judge calls @ s/call | total @mean | total @p95 |",
           "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for d in designs:

@@ -1,9 +1,12 @@
 {
- "probes_ref": "research/cursor/steering-probes-5853",
- "probes_commit": "5bf8f291dc8a42beb80eb90325a2096a397360b2",
+ "probes_ref": "research/cursor/steering-probes-clean-5853",
+ "probes_commit": "ee48829074f2781b60be784fece692d9cd2f0012",
+ "refusal_text_available_locally": true,
  "spine_contrast_vs_pressure_probes": {
   "n_search": 48,
+  "n_search_with_text": 48,
   "n_scored": 12,
+  "n_scored_with_text": 12,
   "search_templates": [
    "false_premise_search",
    "memory_rewrite_search"
@@ -153,7 +156,9 @@
  },
  "contrast_prompts_vs_refusal_probes": {
   "n_search": 40,
+  "n_search_with_text": 20,
   "n_scored": 24,
+  "n_scored_with_text": 24,
   "search_templates": [],
   "search_families": [],
   "scored_with_template_in_search": 0,
@@ -167,10 +172,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.095,
-    "closest_by_tokens": "cp-023",
+    "max_token_jaccard": 0.075,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-002",
@@ -178,10 +183,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.13,
-    "closest_by_tokens": "cp-001",
-    "max_3gram_jaccard": 0.018,
-    "closest_by_3gram": "cp-001"
+    "max_token_jaccard": 0.089,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-003",
@@ -189,10 +194,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.062,
-    "closest_by_tokens": "cp-011",
+    "max_token_jaccard": 0.061,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-004",
@@ -200,10 +205,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.116,
-    "closest_by_tokens": "cp-003",
-    "max_3gram_jaccard": 0.057,
-    "closest_by_3gram": "cp-003"
+    "max_token_jaccard": 0.093,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-005",
@@ -211,10 +216,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.073,
-    "closest_by_tokens": "cp-023",
+    "max_token_jaccard": 0.028,
+    "closest_by_tokens": "cp-006",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-006",
@@ -222,10 +227,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.086,
-    "closest_by_tokens": "cp-011",
+    "max_token_jaccard": 0.054,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-007",
@@ -233,10 +238,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.132,
-    "closest_by_tokens": "cp-023",
+    "max_token_jaccard": 0.111,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-008",
@@ -245,9 +250,9 @@
     "family": "tool_bait",
     "family_in_search": false,
     "max_token_jaccard": 0.044,
-    "closest_by_tokens": "cp-025",
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-009",
@@ -266,10 +271,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.128,
-    "closest_by_tokens": "cp-033",
+    "max_token_jaccard": 0.059,
+    "closest_by_tokens": "cp-038",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-011",
@@ -277,10 +282,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.118,
-    "closest_by_tokens": "cp-023",
+    "max_token_jaccard": 0.061,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-012",
@@ -291,7 +296,7 @@
     "max_token_jaccard": 0.081,
     "closest_by_tokens": "cp-034",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-013",
@@ -302,7 +307,7 @@
     "max_token_jaccard": 0.161,
     "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-014",
@@ -310,10 +315,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.086,
-    "closest_by_tokens": "cp-011",
+    "max_token_jaccard": 0.061,
+    "closest_by_tokens": "cp-034",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-015",
@@ -321,10 +326,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.081,
-    "closest_by_tokens": "cp-011",
+    "max_token_jaccard": 0.051,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-016",
@@ -332,10 +337,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.056,
-    "closest_by_tokens": "cp-023",
+    "max_token_jaccard": 0.033,
+    "closest_by_tokens": "cp-024",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-017",
@@ -343,10 +348,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.105,
-    "closest_by_tokens": "cp-001",
-    "max_3gram_jaccard": 0.022,
-    "closest_by_3gram": "cp-001"
+    "max_token_jaccard": 0.083,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-018",
@@ -357,7 +362,7 @@
     "max_token_jaccard": 0.108,
     "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-019",
@@ -368,7 +373,7 @@
     "max_token_jaccard": 0.077,
     "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-020",
@@ -376,10 +381,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.125,
-    "closest_by_tokens": "cp-007",
+    "max_token_jaccard": 0.065,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-021",
@@ -387,10 +392,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.128,
-    "closest_by_tokens": "cp-023",
+    "max_token_jaccard": 0.079,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-022",
@@ -399,9 +404,9 @@
     "family": "tool_bait",
     "family_in_search": false,
     "max_token_jaccard": 0.091,
-    "closest_by_tokens": "cp-025",
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-023",
@@ -409,10 +414,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.103,
-    "closest_by_tokens": "cp-007",
+    "max_token_jaccard": 0.081,
+    "closest_by_tokens": "cp-036",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    },
    {
     "id": "tb-024",
@@ -420,10 +425,10 @@
     "template_in_search": false,
     "family": "tool_bait",
     "family_in_search": false,
-    "max_token_jaccard": 0.147,
-    "closest_by_tokens": "cp-029",
+    "max_token_jaccard": 0.097,
+    "closest_by_tokens": "cp-030",
     "max_3gram_jaccard": 0.0,
-    "closest_by_3gram": "cp-001"
+    "closest_by_3gram": "cp-002"
    }
   ]
  }

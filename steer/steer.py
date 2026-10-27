@@ -11,9 +11,12 @@ median_resid_norm[L] = median L2 norm of decoder layer L's output hidden state o
 positions except position 0 of `calib_prompts.jsonl` (32 neutral prompts, chat-templated).
 
 Prompt sets are read from Kenji's probe tree (`--probes-ref`; `git remote add research
-https://github.com/arimanyus/steering_research.git && git fetch research cursor/steering-probes-5853`)
-and are NOT copied into this branch. Refusal (tool_bait) prompt text and generations are never written to the committed
-raw.json; only ids, lengths and scores are (full text goes to steer/private/, gitignored).
+https://github.com/arimanyus/steering_research.git && git fetch research cursor/steering-probes-clean-5853`)
+and are NOT copied into this branch. That tree ships refusal_probes.ids.jsonl only (ids + markers); the
+withheld prompt text is resolved from a local, gitignored file (`--refusal-text`, default
+steer/private/refusal_probes.jsonl; its sha256 is recorded) and the refusal set is skipped if it is absent.
+Refusal prompt text and generations are never written to the committed raw.json; only ids, lengths and
+scores are (full text goes to steer/private/, gitignored).
 """
 
 import argparse
@@ -37,7 +40,7 @@ from scorers.spine import FLIP, holds, marker_hits, normalize, refusal_label, sp
 
 MODEL_ID = "Qwen/Qwen3.5-4B"
 REVISION = "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
-PROBES_REF = "research/cursor/steering-probes-5853"  # arimanyus/steering_research draft PR #2 (remote "research")
+PROBES_REF = "research/cursor/steering-probes-clean-5853"  # arimanyus/steering_research draft PR #3 (remote "research")
 MAX_NEW_TOKENS = 96
 SEARCH_LAYERS = (13, 14)
 LYRA_PAIR = [(14, 8949, +1.0), (13, 7956, -1.0)]  # (layer, neuron, sign) from the X post
@@ -298,6 +301,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(HERE))
     ap.add_argument("--probes-ref", default=PROBES_REF)
+    ap.add_argument("--refusal-text", default=str(HERE / "private" / "refusal_probes.jsonl"),
+                    help="local non-committed jsonl with the withheld refusal prompts (id, turns); set skipped if absent")
     ap.add_argument("--n-neutral", type=int, default=8)
     ap.add_argument("--n-factual", type=int, default=10)
     ap.add_argument("--n-pressure", type=int, default=12)
@@ -316,7 +321,19 @@ def main():
     neutral = load_probe(args.probes_ref, "persona_probes")[:args.n_neutral]
     factual = load_probe(args.probes_ref, "factual_probes")[:args.n_factual]
     pressure = load_probe(args.probes_ref, "pressure_probes")[:args.n_pressure]
-    refusal = load_probe(args.probes_ref, "refusal_probes")[:args.n_refusal]
+    refusal_meta = load_probe(args.probes_ref, "refusal_probes.ids")
+    failures, refusal_source = [], {"path": args.refusal_text, "available": Path(args.refusal_text).exists()}
+    if refusal_source["available"]:
+        import hashlib
+        refusal_source["sha256"] = hashlib.sha256(Path(args.refusal_text).read_bytes()).hexdigest()
+        text_by_id = {r["id"]: r["turns"] for r in load_jsonl(args.refusal_text)}
+        resolved = [{**m, "turns": text_by_id[m["id"]]} for m in refusal_meta if m["id"] in text_by_id]
+        refusal_source["ids_resolved"] = [m["id"] for m in resolved]
+        refusal_source["turn_counts"] = {m["id"]: len(m["turns"]) for m in resolved}
+        refusal = resolved[:args.n_refusal]
+    else:
+        refusal = []
+        failures.append("refusal prompt text not available in this run env (ids-only tree); refusal set not generated")
     calib = [r["prompt"] for r in load_jsonl(HERE / "calib_prompts.jsonl")]
 
     t0 = time.time()
@@ -333,12 +350,12 @@ def main():
                  "torch": torch.__version__, "transformers": transformers.__version__,
                  "python": sys.version.split()[0], "numpy": np.__version__,
                  "decoding": "greedy", "max_new_tokens": MAX_NEW_TOKENS, "chat_template": "enable_thinking=False",
-                 "probes_ref": args.probes_ref, "probes_commit": probes_sha,
+                 "probes_ref": args.probes_ref, "probes_commit": probes_sha, "refusal_text_source": refusal_source,
                  "sets": {"neutral": [r["id"] for r in neutral], "factual": [r["id"] for r in factual],
                           "pressure": [r["id"] for r in pressure], "refusal": [r["id"] for r in refusal]},
                  "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "random_seed": RANDOM_SEED},
         "load_time_s": load_s, "peak_rss_gb_after_load": rss_gb(),
-        "failures": [],
+        "failures": failures,
     }
     print(f"loaded {type(model).__name__} in {load_s:.1f}s, rss {rss_gb():.2f} GB", flush=True)
 
