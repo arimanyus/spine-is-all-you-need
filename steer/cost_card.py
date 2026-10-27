@@ -14,6 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 HERE = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "steer"  # dir holding raw.json etc.
+PROBES_REF = "research/cursor/steering-probes-5853"  # set sizes / turn counts for the projection
 
 
 def load_probe(ref, name):
@@ -34,7 +35,8 @@ def main():
     judge = json.loads((HERE / "judge_timing.json").read_text()) if (HERE / "judge_timing.json").exists() else None
     leak = json.loads((HERE / "leakage.json").read_text()) if (HERE / "leakage.json").exists() else None
     meta, conds, summ = raw["meta"], raw["conditions"], raw["summary"]
-    ref = meta["probes_ref"]
+    ref = PROBES_REF
+    ref_sha = subprocess.check_output(["git", "rev-parse", ref], cwd=ROOT, text=True).strip()
 
     # pooled unit costs over all generations
     secs = []
@@ -99,7 +101,8 @@ def main():
           f"Model `{meta['model_id']}` @ `{meta['revision']}` ({meta['model_class']}, text-only path, {meta['dtype']}, CPU, "
           f"{meta['torch_threads']} torch threads). torch {meta['torch']}, transformers {meta['transformers']}, python {meta['python']}. "
           f"Greedy, max_new_tokens {meta['max_new_tokens']}, chat template with `enable_thinking=False`. "
-          f"Probes from `{ref}` @ `{meta['probes_commit'][:12]}`. All numbers below are read from `raw.json` / "
+          f"Smoke prompts from `{meta['probes_ref']}` @ `{meta['probes_commit'][:12]}`; projection set sizes from `{ref}` @ `{ref_sha[:12]}` "
+          f"(the four scored files are byte-identical in both trees; only `spine_contrast` differs). All numbers below are read from `raw.json` / "
           f"`judge_timing.json` / `leakage.json` by `cost_card.py`.", "",
           f"- load time: {raw['load_time_s']:.1f} s (safetensors are mmapped lazily; weights page in during the first forward)",
           f"- peak RSS after load: {raw['peak_rss_gb_after_load']:.2f} GB; peak RSS end of run: {raw['peak_rss_gb']:.2f} GB",
@@ -167,12 +170,15 @@ def main():
     if leak:
         a, b = leak["spine_contrast_vs_pressure_probes"], leak["contrast_prompts_vs_refusal_probes"]
         L += ["## Leakage (see `LEAKAGE.md`)", "",
-              f"- spine_contrast vs pressure_probes: shared ids {len(a['shared_ids'])}, scored items with template in search set "
-              f"{a['scored_with_template_in_search']}/{a['n_scored']}, max token Jaccard {max(i['max_token_jaccard'] for i in a['items'])}",
-              f"- contrast_prompts vs refusal_probes: shared ids {len(b['shared_ids'])}, scored items with template in search set "
-              f"{b['scored_with_template_in_search']}/{b['n_scored']}, max token Jaccard {max(i['max_token_jaccard'] for i in b['items'])}",
-              "- Search-based claims (top-k steering) need template-disjoint search/eval splits; the current pressure search set "
-              "shares both templates with the scored set, so a found neuron is a template feature until shown otherwise.", ""]
+              f"- spine_contrast vs pressure_probes: shared ids {len(a['shared_ids'])}; scored items with `template` in search set "
+              f"{a['scored_with_template_in_search']}/{a['n_scored']}; with template *family* (fp/mr prefix) in search set "
+              f"{a['scored_with_family_in_search']}/{a['n_scored']}; max token Jaccard {max(i['max_token_jaccard'] for i in a['items'])}",
+              f"- contrast_prompts vs refusal_probes: shared ids {len(b['shared_ids'])}; scored items with `template` in search set "
+              f"{b['scored_with_template_in_search']}/{b['n_scored']}; family {b['scored_with_family_in_search']}/{b['n_scored']}; "
+              f"max token Jaccard {max(i['max_token_jaccard'] for i in b['items'])}",
+              "- Search-based claims (top-k steering) need template-disjoint search/eval splits. `template` fields are now disjoint "
+              "(Kenji's `template_overlap.md`), but the pressure search set is still built from the same two dialogue families; "
+              "neuron rankings stay EXPLORATORY until Asha's scorer confirms zero overlap against this tree.", ""]
     (HERE / "COST_CARD.md").write_text("\n".join(L))
     print("\n".join(L))
 

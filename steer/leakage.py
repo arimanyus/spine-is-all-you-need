@@ -5,8 +5,12 @@
 Pairs: spine_contrast (search) vs pressure_probes (scored); contrast_prompts (search) vs
 refusal_probes (scored). Per scored item: max word-token Jaccard and max word-3-gram Jaccard
 against any search row (text of all user turns), plus the id of the closest search row.
-Template overlap: scored items whose `template` also appears in the search set. spine_contrast
-rows carry no `template`; it is inferred from `source_id` prefix (fp- / mr-) and marked so.
+Template overlap: scored items whose `template` field also appears in the search set, and (stricter)
+whose template *family* by id/source_id prefix (fp-/mr-/tb-) appears in the search set.
+
+Probe tree: `research/cursor/steering-probes-5853` (arimanyus/steering_research draft PR #2):
+    git remote add research https://github.com/arimanyus/steering_research.git
+    git fetch research cursor/steering-probes-5853
 """
 
 import json
@@ -16,8 +20,10 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-REF = sys.argv[1] if len(sys.argv) > 1 else "origin/kenji/steering-probes-08e5"
-INFER = {"fp": "false_premise_stack", "mr": "memory_rewrite"}
+REF = sys.argv[1] if len(sys.argv) > 1 else "research/cursor/steering-probes-5853"
+# template *family* from the id / source_id prefix: fp-* and mr-* items are false-premise / memory-rewrite
+# dialogues whatever their `template` field says (the search tree renames them *_search).
+FAMILY = {"fp": "false_premise", "mr": "memory_rewrite", "tb": "tool_bait"}
 
 
 def load(name):
@@ -43,17 +49,14 @@ def ngrams(toks, n):
     return {tuple(toks[i:i + n]) for i in range(len(toks) - n + 1)}
 
 
-def template_of(row):
-    if "template" in row:
-        return row["template"], False
-    src = row.get("source_id", "")
-    return INFER.get(src[:2]), bool(src)
+def family_of(row):
+    return FAMILY.get(row.get("source_id", row["id"])[:2])
 
 
 def compare(search, scored):
     s_feats = [(r["id"], set(tokens(text_of(r))), ngrams(tokens(text_of(r)), 3)) for r in search]
-    s_templates = {template_of(r)[0] for r in search} - {None}
-    inferred = any(template_of(r)[1] for r in search)
+    s_templates = {r.get("template") for r in search} - {None}
+    s_families = {family_of(r) for r in search} - {None}
     items = []
     for r in scored:
         toks = tokens(text_of(r))
@@ -62,11 +65,13 @@ def compare(search, scored):
         best_tri = max(s_feats, key=lambda f: jaccard(tri, f[2]))
         items.append({"id": r["id"], "template": r.get("template"),
                       "template_in_search": r.get("template") in s_templates,
+                      "family": family_of(r), "family_in_search": family_of(r) in s_families,
                       "max_token_jaccard": round(jaccard(tset, best_tok[1]), 3), "closest_by_tokens": best_tok[0],
                       "max_3gram_jaccard": round(jaccard(tri, best_tri[2]), 3), "closest_by_3gram": best_tri[0]})
     return {"n_search": len(search), "n_scored": len(scored), "search_templates": sorted(s_templates),
-            "search_template_inferred_from_source_id": inferred,
+            "search_families": sorted(s_families),
             "scored_with_template_in_search": sum(i["template_in_search"] for i in items),
+            "scored_with_family_in_search": sum(i["family_in_search"] for i in items),
             "shared_ids": sorted({r["id"] for r in search} & {r["id"] for r in scored}),
             "shared_source_ids": sorted({r.get("source_id") for r in search} & {r["id"] for r in scored}),
             "items": items}
@@ -88,21 +93,23 @@ def main():
         lines += [f"## {title}", "",
                   f"- search rows: {c['n_search']}; scored items: {c['n_scored']}",
                   f"- shared ids: {c['shared_ids'] or 'none'}; scored ids appearing as a search `source_id`: {c['shared_source_ids'] or 'none'}",
-                  f"- templates present in search set: {c['search_templates'] or 'none (no `template` field)'}"
-                  + (" (inferred from `source_id` prefix fp-/mr-; the file has no `template` field)" if c["search_template_inferred_from_source_id"] else ""),
-                  f"- **scored items whose template also appears in the search set: {c['scored_with_template_in_search']}/{c['n_scored']}**", "",
-                  "| scored id | template | template in search | max token Jaccard (closest) | max 3-gram Jaccard (closest) |",
-                  "|---|---|---|---|---|"]
+                  f"- `template` values in search set: {c['search_templates'] or 'none (no `template` field)'}; "
+                  f"template families by id prefix (fp/mr/tb): {c['search_families'] or 'none'}",
+                  f"- **scored items whose `template` also appears in the search set: {c['scored_with_template_in_search']}/{c['n_scored']}**; "
+                  f"whose template *family* (id prefix) appears in the search set: {c['scored_with_family_in_search']}/{c['n_scored']}", "",
+                  "| scored id | template | template in search | family in search | max token Jaccard (closest) | max 3-gram Jaccard (closest) |",
+                  "|---|---|---|---|---|---|"]
         for i in c["items"]:
-            lines.append(f"| {i['id']} | {i['template']} | {i['template_in_search']} | {i['max_token_jaccard']} ({i['closest_by_tokens']}) "
+            lines.append(f"| {i['id']} | {i['template']} | {i['template_in_search']} | {i['family_in_search']} | {i['max_token_jaccard']} ({i['closest_by_tokens']}) "
                          f"| {i['max_3gram_jaccard']} ({i['closest_by_3gram']}) |")
         lines.append("")
     lines += ["## Reading", "",
-              "Ids are disjoint by construction, but ids are not the leakage unit for neuron search: the pressure "
-              "search and scored sets are drawn from the same two templates, so a neuron found on `spine_contrast` "
-              "is a template-level feature and any claim about it needs a template-disjoint split (or a held-out "
-              "template) before it counts. The smoke-run search in `raw.json` is worse still (it used the scored "
-              "items themselves) and is labelled EXPLORATORY."]
+              "Ids and `template` field values are disjoint by construction (Kenji's `template_overlap.md`). The family "
+              "column is the stricter check: `spine_contrast` is still built from fp-*/mr-* false-premise / memory-rewrite "
+              "dialogues, i.e. the same two template *families* as `pressure_probes`, under renamed templates with a "
+              "reworded scaffold; the Jaccard columns measure how far that rewording goes. Neuron rankings stay EXPLORATORY "
+              "until Asha's scorer confirms zero overlap against this tree. The smoke-run search in `raw.json` is worse "
+              "still (it used the scored items themselves) and is labelled EXPLORATORY."]
     (HERE / "LEAKAGE.md").write_text("\n".join(lines) + "\n")
     print(json.dumps({k: {kk: vv for kk, vv in v.items() if kk != "items"} for k, v in report.items() if isinstance(v, dict)}, indent=1))
 

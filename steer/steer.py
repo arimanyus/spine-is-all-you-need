@@ -10,8 +10,9 @@ two forms numerically on one token in float32. Layers are 0-indexed (`model.laye
 median_resid_norm[L] = median L2 norm of decoder layer L's output hidden state over all token
 positions except position 0 of `calib_prompts.jsonl` (32 neutral prompts, chat-templated).
 
-Prompt sets are read from Kenji's probe branch (`--probes-ref`) and are NOT copied into this
-branch. Refusal (tool_bait) prompt text and generations are never written to the committed
+Prompt sets are read from Kenji's probe tree (`--probes-ref`; `git remote add research
+https://github.com/arimanyus/steering_research.git && git fetch research cursor/steering-probes-5853`)
+and are NOT copied into this branch. Refusal (tool_bait) prompt text and generations are never written to the committed
 raw.json; only ids, lengths and scores are (full text goes to steer/private/, gitignored).
 """
 
@@ -36,7 +37,7 @@ from scorers.spine import FLIP, holds, marker_hits, normalize, refusal_label, sp
 
 MODEL_ID = "Qwen/Qwen3.5-4B"
 REVISION = "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"
-PROBES_REF = "origin/kenji/steering-probes-08e5"
+PROBES_REF = "research/cursor/steering-probes-5853"  # arimanyus/steering_research draft PR #2 (remote "research")
 MAX_NEW_TOKENS = 96
 SEARCH_LAYERS = (13, 14)
 LYRA_PAIR = [(14, 8949, +1.0), (13, 7956, -1.0)]  # (layer, neuron, sign) from the X post
@@ -240,6 +241,18 @@ class Harness:
         return float(torch.exp(nll))
 
 
+def materialize(model):
+    """Copy the mmapped safetensors weights into anonymous memory (once per shared storage, so tied
+    embeddings stay tied). File-backed pages were being evicted under hypervisor balloon pressure
+    and re-read from disk every forward pass; anonymous pages cannot be."""
+    seen = {}
+    for p in model.parameters():
+        key = p.data.data_ptr()
+        if key not in seen:
+            seen[key] = p.data.clone()
+        p.data = seen[key]
+
+
 def villain_count(text):
     t = text.lower()
     return sum(t.count(k) for k in VILLAIN_KEYWORDS)
@@ -309,11 +322,13 @@ def main():
     t0 = time.time()
     tok = AutoTokenizer.from_pretrained(MODEL_ID, revision=REVISION)
     model = AutoModelForCausalLM.from_pretrained(MODEL_ID, revision=REVISION, dtype=torch.bfloat16).eval()
+    materialize(model)
     load_s = time.time() - t0
     H = Harness(model, tok)
     raw = {
         "meta": {"model_id": MODEL_ID, "revision": REVISION, "model_class": type(model).__name__,
                  "text_only_path": "AutoModelForCausalLM -> Qwen3_5ForCausalLM (vision tower not loaded)",
+                 "weights_in_anonymous_memory": True,
                  "dtype": "bfloat16", "device": "cpu", "torch_threads": torch.get_num_threads(),
                  "torch": torch.__version__, "transformers": transformers.__version__,
                  "python": sys.version.split()[0], "numpy": np.__version__,
@@ -408,6 +423,7 @@ def main():
                 results[set_name][item["id"]]["by_condition"][cond] = rec
                 secs += s; toks += t
                 print(f"[{cond}] {set_name}/{item['id']} {sum(t)} tok {sum(s):.1f}s rss {rss_gb():.2f}", flush=True)
+                dump()
         H.clear_steering()
         cond_meta[cond] = {"neurons": [{"layer": L, "neuron": n, "sign": s} for L, n, s in neurons], "dose": 1.0,
                            "deltas": deltas, "sets": sets, "timing": timing(secs, toks),

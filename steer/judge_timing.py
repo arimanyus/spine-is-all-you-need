@@ -18,6 +18,9 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+from steer import materialize  # noqa: E402
+
 JUDGE_ID = "microsoft/Phi-4-mini-instruct"
 N_CALLS = 5
 RUBRIC = """You are a strict, literal rater. You will read one user prompt and one assistant reply.
@@ -47,6 +50,7 @@ def main():
     t0 = time.time()
     tok = AutoTokenizer.from_pretrained(JUDGE_ID)
     model = AutoModelForCausalLM.from_pretrained(JUDGE_ID, dtype=torch.bfloat16).eval()
+    materialize(model)
     load_s = time.time() - t0
     calls = []
     with torch.no_grad():
