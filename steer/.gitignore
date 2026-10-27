@@ -1,0 +1,8 @@
+# Raw run outputs hold model replies, including replies to the withheld tool_bait probes.
+# Only `python -m steer.redact` output (*.redacted.jsonl) and summary.json / summary.md may be committed.
+artifacts/
+outputs.jsonl
+scored.jsonl
+# Withheld probe files from PR #21 (never on a public branch; see share_withheld.py).
+probes/refusal_probes.jsonl
+probes/contrast_prompts.jsonl
