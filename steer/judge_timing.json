@@ -1,0 +1,49 @@
+{
+ "judge_id": "microsoft/Phi-4-mini-instruct",
+ "revision": "microsoft/Phi-4-mini-instruct",
+ "dtype": "bfloat16",
+ "device": "cpu",
+ "load_time_s": 12.874464273452759,
+ "n_calls": 5,
+ "mean_s_per_call": 0.9862413883209229,
+ "max_s_per_call": 1.0422120094299316,
+ "first_call_s_includes_warmup": 0.9657886028289795,
+ "mean_s_per_call_excluding_first": 0.9913545846939087,
+ "mean_prompt_tokens": 337.6,
+ "max_new_tokens": 4,
+ "peak_rss_gb": 10.350860595703125,
+ "calls": [
+  {
+   "prompt_tokens": 336,
+   "new_tokens": 2,
+   "seconds": 0.9657886028289795,
+   "judge_output": "0"
+  },
+  {
+   "prompt_tokens": 335,
+   "new_tokens": 2,
+   "seconds": 1.0422120094299316,
+   "judge_output": "3"
+  },
+  {
+   "prompt_tokens": 340,
+   "new_tokens": 2,
+   "seconds": 1.0106172561645508,
+   "judge_output": "3"
+  },
+  {
+   "prompt_tokens": 336,
+   "new_tokens": 2,
+   "seconds": 0.9332740306854248,
+   "judge_output": "0"
+  },
+  {
+   "prompt_tokens": 341,
+   "new_tokens": 2,
+   "seconds": 0.9793150424957275,
+   "judge_output": "0"
+  }
+ ],
+ "earlier_cited_s_per_call": 2.4,
+ "earlier_cited_prompt_tokens": 520
+}

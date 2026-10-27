@@ -562,7 +562,7 @@ def write_samples(raw, path):
              "Pressure dialogues show the final-turn answer only.", ""]
     for cond in conds:
         lines.append(f"- `{cond}`: " + (", ".join(f"L{d['layer']} n{d['neuron']} {d['sign']:+.0f}" for d in raw['conditions'][cond]['deltas']) or "unsteered"))
-    for set_name, title in (("neutral", "Neutral prompts"), ("factual", "Factual QA (placeholder set)")):
+    for set_name, title in (("neutral", "Neutral prompts"), ("factual", "Factual probes")):
         lines += ["", f"## {title}", ""]
         for i, r in raw["results"][set_name].items():
             lines += [f"### {i}: {r['prompt']}", ""]

@@ -52,7 +52,8 @@ def main():
     judge_s = judge["mean_s_per_call_excluding_first"] if judge else 2.40
     judge_src = (f"measured here: {judge['judge_id']}, {judge['n_calls']} calls, mean {judge['mean_s_per_call']:.2f} s "
                  f"(first call {judge['first_call_s_includes_warmup']:.2f} s incl. warm-up; {judge_s:.2f} s excluding it), "
-                 f"mean prompt {judge['mean_prompt_tokens']:.0f} tokens, {judge['max_new_tokens']} new tokens"
+                 f"mean prompt {judge['mean_prompt_tokens']:.0f} tokens (shorter than the ~520-token prompts behind the earlier 2.40 s figure), "
+                 f"max {judge['max_new_tokens']} new tokens"
                  if judge else "NOT measured here (time); using the earlier cited ~2.40 s/call for ~520-token prompts on Phi-4-mini-instruct")
 
     # scored / search set sizes from the probe files
@@ -106,11 +107,15 @@ def main():
           f"Model `{meta['model_id']}` @ `{meta['revision']}` ({meta['model_class']}, text-only path, {meta['dtype']}, CPU, "
           f"{meta['torch_threads']} torch threads). torch {meta['torch']}, transformers {meta['transformers']}, python {meta['python']}. "
           f"Greedy, max_new_tokens {meta['max_new_tokens']}, chat template with `enable_thinking=False`. "
-          f"Smoke prompts from `{meta['probes_ref']}` @ `{meta['probes_commit'][:12]}`; projection set sizes from `{ref}` @ `{ref_sha[:12]}` "
-          f"(the four scored files are byte-identical in both trees; only `spine_contrast` differs). All numbers below are read from `raw.json` / "
+          f"Probes from `{ref}` @ `{ref_sha[:12]}`" + ("" if ref == meta["probes_ref"] else f" (smoke prompts were read from `{meta['probes_ref']}` @ `{meta['probes_commit'][:12]}`)")
+          + ". All numbers below are read from `raw.json` / "
           f"`judge_timing.json` / `leakage.json` by `cost_card.py`.", "",
-          f"- load time: {raw['load_time_s']:.1f} s (safetensors are mmapped lazily; weights page in during the first forward)",
-          f"- peak RSS after load: {raw['peak_rss_gb_after_load']:.2f} GB; peak RSS end of run: {raw['peak_rss_gb']:.2f} GB",
+          f"- load time: {raw['load_time_s']:.1f} s (includes copying the mmapped safetensors into anonymous memory, see `materialize`)",
+          f"- peak RSS after load: {raw['peak_rss_gb_after_load']:.2f} GB; end of run: {raw['peak_rss_gb']:.2f} GB (ru_maxrss; it counts the "
+          f"mmapped file pages and the anonymous copy together at the moment of copying, so the steady-state footprint is lower, "
+          f"about the bf16 weights plus activations; the Phi-4-mini judge peaked at "
+          + (f"{judge['peak_rss_gb']:.2f} GB" if judge else "n/a") + ")",
+          f"- timing clock: {meta.get('timing_clock', 'time.time')}",
           f"- calibration: {raw['calibration']['n_prompts']} prompts, {raw['calibration']['n_positions']} positions "
           f"(position 0 excluded), {raw['calibration']['seconds']:.1f} s; median residual norm L13 = "
           f"{raw['calibration']['median_resid_norm'][13]:.2f}, L14 = {raw['calibration']['median_resid_norm'][14]:.2f}",
@@ -118,7 +123,7 @@ def main():
           f"added-vector norm {raw['equivalence_check']['added_vec_norm']:.2f} vs target {raw['equivalence_check']['target_norm_dose_x_median']:.2f}, "
           f"cosine to down_proj column {raw['equivalence_check']['cos_added_vs_column']:.4f}, "
           f"rel. err vs fp32 output-side formula {raw['equivalence_check']['rel_err_vs_output_side_fp32']:.2e}",
-          f"- smoke sets (lowest ids): neutral {len(meta['sets']['neutral'])}, factual {len(meta['sets']['factual'])} (placeholder gold QA), "
+          f"- smoke sets (lowest ids): neutral {len(meta['sets']['neutral'])}, factual {len(meta["sets"]["factual"])} (Kenji's factual_probes), "
           f"pressure {len(meta['sets']['pressure'])}, refusal {len(meta['sets']['refusal'])} of {N['refusal_probes']} "
           f"(prompt text resolved from local gitignored file: {meta['refusal_text_source']['available']})", ""]
     if raw["failures"]:
