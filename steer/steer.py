@@ -201,10 +201,10 @@ class Harness:
     @torch.no_grad()
     def generate(self, history):
         ids = self.encode(history)
-        t0 = time.time()
+        t0 = time.monotonic()
         out = self.model.generate(ids, attention_mask=torch.ones_like(ids), max_new_tokens=MAX_NEW_TOKENS,
                                   do_sample=False, pad_token_id=self.tok.pad_token_id or self.tok.eos_token_id)
-        secs = time.time() - t0
+        secs = time.monotonic() - t0
         new = out[0, ids.shape[1]:].tolist()
         for i, t in enumerate(new):
             if t in self.eos:
@@ -336,11 +336,11 @@ def main():
         failures.append("refusal prompt text not available in this run env (ids-only tree); refusal set not generated")
     calib = [r["prompt"] for r in load_jsonl(HERE / "calib_prompts.jsonl")]
 
-    t0 = time.time()
+    t0 = time.monotonic()
     tok = AutoTokenizer.from_pretrained(MODEL_ID, revision=REVISION)
     model = AutoModelForCausalLM.from_pretrained(MODEL_ID, revision=REVISION, dtype=torch.bfloat16).eval()
     materialize(model)
-    load_s = time.time() - t0
+    load_s = time.monotonic() - t0
     H = Harness(model, tok)
     raw = {
         "meta": {"model_id": MODEL_ID, "revision": REVISION, "model_class": type(model).__name__,
@@ -349,6 +349,8 @@ def main():
                  "dtype": "bfloat16", "device": "cpu", "torch_threads": torch.get_num_threads(),
                  "torch": torch.__version__, "transformers": transformers.__version__,
                  "python": sys.version.split()[0], "numpy": np.__version__,
+                 "timing_clock": "time.monotonic (CLOCK_MONOTONIC; this VM is paused by the host when idle and the "
+                                 "monotonic clock does not advance during a pause, unlike wall-clock time.time)",
                  "decoding": "greedy", "max_new_tokens": MAX_NEW_TOKENS, "chat_template": "enable_thinking=False",
                  "probes_ref": args.probes_ref, "probes_commit": probes_sha, "refusal_text_source": refusal_source,
                  "sets": {"neutral": [r["id"] for r in neutral], "factual": [r["id"] for r in factual],
@@ -359,9 +361,9 @@ def main():
     }
     print(f"loaded {type(model).__name__} in {load_s:.1f}s, rss {rss_gb():.2f} GB", flush=True)
 
-    t0 = time.time()
+    t0 = time.monotonic()
     raw["calibration"] = H.calibrate(calib)
-    raw["calibration"]["seconds"] = time.time() - t0
+    raw["calibration"]["seconds"] = time.monotonic() - t0
     (out_dir / "calib_norms.json").write_text(json.dumps(raw["calibration"], indent=1))
     raw["equivalence_check"] = H.equivalence_check(14, 8949, 1.0, neutral[0]["prompt"])
     print("equivalence", raw["equivalence_check"], flush=True)
@@ -431,7 +433,7 @@ def main():
 
     def run_condition(cond, neurons, sets, record=False):
         deltas = H.set_steering(neurons, 1.0) if neurons else []
-        secs, toks, t0 = [], [], time.time()
+        secs, toks, t0 = [], [], time.monotonic()
         for set_name in sets:
             items = {"neutral": neutral, "factual": factual, "pressure": pressure, "refusal": refusal}[set_name]
             for item in items:
@@ -444,7 +446,7 @@ def main():
         H.clear_steering()
         cond_meta[cond] = {"neurons": [{"layer": L, "neuron": n, "sign": s} for L, n, s in neurons], "dose": 1.0,
                            "deltas": deltas, "sets": sets, "timing": timing(secs, toks),
-                           "wall_s": time.time() - t0, "peak_rss_gb_so_far": rss_gb()}
+                           "wall_s": time.monotonic() - t0, "peak_rss_gb_so_far": rss_gb()}
         dump()
 
     def dump():
@@ -507,12 +509,12 @@ def main():
 
     # ---- perplexity of every generation under the unsteered model --------------------------
     H.clear_steering()
-    t0 = time.time()
+    t0 = time.monotonic()
     for set_name, i, cond, ti, hist, ids in gen_ids:
         p = H.ppl(hist, ids)
         rec = results[set_name][i]["by_condition"][cond]
         (rec["turns"][ti] if "turns" in rec else rec)["ppl_unsteered"] = p
-    raw["ppl_pass_seconds"] = time.time() - t0
+    raw["ppl_pass_seconds"] = time.monotonic() - t0
 
     # ---- summary ---------------------------------------------------------------------------
     def mean(xs):
