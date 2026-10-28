@@ -41,8 +41,76 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parent))
 import steer  # noqa: E402
 from steer import EXPLORATORY, MODEL_ID, PROBES_REF, REVISION, Harness, crude_refused, load_jsonl, load_probe, materialize, rss_gb, timing  # noqa: E402
-from directions import Resid, cohens_d, pick_layer  # noqa: E402
 from scorers.spine import holds, marker_hits, normalize, refusal_label  # noqa: E402
+
+def cohens_d(a, b):
+    a, b = np.asarray(a, dtype=np.float64), np.asarray(b, dtype=np.float64)
+    return float((a.mean() - b.mean()) / (np.sqrt((a.var(ddof=1) + b.var(ddof=1)) / 2) + 1e-9))
+
+
+class Resid:
+    """Residual-stream capture and interventions. Index 0 = embedding output, i+1 = decoder layer i output."""
+
+    def __init__(self, H):
+        self.H, self.handles = H, []
+        self.points = [H.model.model.embed_tokens] + list(H.layers)
+
+    @staticmethod
+    def _out(out):
+        return out[0] if isinstance(out, tuple) else out
+
+    @staticmethod
+    def _wrap(out, h):
+        return (h,) + tuple(out[1:]) if isinstance(out, tuple) else h
+
+    @torch.no_grad()
+    def last_token(self, ids):
+        """[n_points, hidden] float32 residual at the last position of a prefill forward."""
+        buf = [None] * len(self.points)
+
+        def mk(i):
+            def hook(_m, _a, out):
+                buf[i] = self._out(out)[0, -1].float().numpy().copy()
+            return hook
+        hs = [p.register_forward_hook(mk(i)) for i, p in enumerate(self.points)]
+        self.H.model(ids)
+        for h in hs:
+            h.remove()
+        return np.stack(buf)
+
+    def ablate(self, unit):
+        u = torch.tensor(unit, dtype=torch.float32)
+
+        def hook(_m, _a, out):
+            h = self._out(out)
+            hf = h.float()
+            return self._wrap(out, (hf - (hf @ u)[..., None] * u).to(h.dtype))
+        self.handles = [p.register_forward_hook(hook) for p in self.points]
+
+    def subtract(self, layer, vec):
+        v = torch.tensor(vec, dtype=torch.float32)
+
+        def hook(_m, _a, out):
+            h = self._out(out)
+            return self._wrap(out, (h.float() - v).to(h.dtype))
+        self.handles = [self.H.layers[layer].register_forward_hook(hook)]
+
+    def clear(self):
+        for h in self.handles:
+            h.remove()
+        self.handles = []
+
+
+def pick_layer(acts_a, acts_b, train_idx_a, train_idx_b, held_a, held_b):
+    """acts_*: [n, n_points, hidden]. Returns (best decoder layer, per-layer held-out d, unit dirs)."""
+    curve = []
+    for p in range(1, acts_a.shape[1]):  # skip embedding output (p=0)
+        d = acts_a[train_idx_a, p].mean(0) - acts_b[train_idx_b, p].mean(0)
+        u = d / (np.linalg.norm(d) + 1e-9)
+        curve.append(cohens_d(acts_a[held_a, p] @ u, acts_b[held_b, p] @ u))
+    best = int(np.nanargmax(curve)) if not np.all(np.isnan(curve)) else 0
+    return best, curve  # best = decoder layer index (point best+1)
+
 
 SEED = 0
 KS = (1, 2, 4, 8, 16, 32, 64)
