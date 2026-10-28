@@ -121,7 +121,7 @@ PCT = 20
 
 
 class Neurons:
-    """Zero-ablation or negative steering of a set of (layer, neuron) at down_proj input."""
+    """Zero-ablation ("zero"), negative ("neg") or positive ("pos") steering of (layer, neuron) sets at down_proj input."""
 
     def __init__(self, H, neurons, kind):
         self.H, self.neurons, self.kind, self.handles, self.deltas = H, neurons, kind, [], []
@@ -136,7 +136,8 @@ class Neurons:
             if self.kind == "zero":
                 vals = torch.zeros(len(ns))
             else:
-                vals = torch.tensor([-self.H.resid_median[L] / self.H.col_norm(L, n) for n in ns])
+                sign = -1.0 if self.kind == "neg" else 1.0
+                vals = torch.tensor([sign * self.H.resid_median[L] / self.H.col_norm(L, n) for n in ns])
                 self.deltas += [{"layer": L, "neuron": n, "delta": float(v)} for n, v in zip(ns, vals)]
 
             def hook(_m, args, idx=idx, vals=vals, kind=self.kind):
