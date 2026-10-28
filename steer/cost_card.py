@@ -199,6 +199,14 @@ def main():
               f"{len(hunt['conditions'])} scored conditions, {wall / 3600:.1f} h of generation+scoring wall time, peak RSS {hunt['peak_rss_gb']:.2f} GB"
               + ("" if "finished_utc" in hunt["meta"] else " (run still in progress when this card was rendered)") + ".", "",
               *hunt_section(hunt), ""]
+    if (HERE / "raw_shortlist.json").exists():
+        from report import hunt_section
+        sl = json.loads((HERE / "raw_shortlist.json").read_text())
+        wall = sum(c["wall_s"] for c in sl["conditions"].values())
+        L += ["## steer_index shortlist test (see `SHORTLIST.md`, `raw_shortlist.json`)", "",
+              f"{len(sl['conditions'])} scored conditions, {wall / 3600:.1f} h wall time, peak RSS {sl['peak_rss_gb']:.2f} GB"
+              + ("" if "finished_utc" in sl["meta"] else " (run still in progress when this card was rendered)") + f"; hand-check flags: {len(sl['hand_check'])}.", "",
+              *hunt_section(sl), ""]
     (HERE / "COST_CARD.md").write_text("\n".join(L))
     print("\n".join(L))
 
