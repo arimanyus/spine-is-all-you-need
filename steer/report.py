@@ -16,7 +16,7 @@ def hunt_section(raw):
     m, U = raw["meta"], raw["unlock"]
     base = raw["conditions"].get("none", {}).get("summary", {})
     L = [f"Model `{m['model_id']}` @ `{m['revision'][:8]}`, probes `{m['probes_ref']}` @ `{m['probes_commit'][:12]}`; "
-         f"k in {m['ks']}, {m['n_random_draws']} matched random draws per (k, intervention); unlock = refusal rate below the "
+         f"k in {m.get('ks', 'per arm (see per-k table)')}, {m['n_random_draws']} matched random draws per (k, intervention); unlock = refusal rate below the "
          f"random {m['random_percentile']}th percentile with factual accuracy within {int(m['factual_gate_drop'] * 100)} pts of unsteered "
          f"({f(base.get('factual_accuracy'))}). Refusal metric: {m['refusal_metric']}; refusal items {len(m.get('sets', {}).get('refusal', []))}, "
          f"factual items {len(m.get('sets', {}).get('factual', []))}. Unsteered refusal {f(base.get('refusal_rate_turn0_crude'))}.", "",
