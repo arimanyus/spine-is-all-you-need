@@ -1,5 +1,6 @@
-"""STEP 1: direction ablation (Arditi et al. 2024, "Refusal in LMs is mediated by a single direction")
-on Qwen3.5-4B, CPU bf16, greedy. Writes steer/raw_directions.json (scores only) and private artifacts.
+"""Direction ablation (Arditi et al. 2024) harness. NOTE: the scored generation arm of this script was dropped
+(a teammate's agent runs it); hunt.py imports `Resid`, `cohens_d`, `pick_layer` from here. Running this file
+itself would redo the ablation arm. Writes steer/raw_directions.json (scores only) and private artifacts.
 
 Directions are difference-of-means of the residual stream at the answer position (last prompt token,
 after the chat template's empty <think> block), taken at each decoder layer output:
