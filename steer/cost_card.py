@@ -13,6 +13,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "steer"))
 HERE = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "steer"  # dir holding raw.json etc.
 PROBES_REF = "research/cursor/steering-probes-clean-5853"  # set sizes / turn counts for the projection
 
@@ -190,6 +191,14 @@ def main():
               "- Search-based claims (top-k steering) need template-disjoint search/eval splits. `template` fields are now disjoint "
               "(Kenji's `template_overlap.md`), but the pressure search set is still built from the same two dialogue families; "
               "neuron rankings stay EXPLORATORY until Asha's scorer confirms zero overlap against this tree.", ""]
+    if (HERE / "raw_hunt.json").exists():
+        from report import hunt_section
+        hunt = json.loads((HERE / "raw_hunt.json").read_text())
+        wall = sum(c["wall_s"] for c in hunt["conditions"].values())
+        L += ["## Neuron hunt (see `HUNT.md`, `raw_hunt.json`)", "",
+              f"{len(hunt['conditions'])} scored conditions, {wall / 3600:.1f} h of generation+scoring wall time, peak RSS {hunt['peak_rss_gb']:.2f} GB"
+              + ("" if "finished_utc" in hunt["meta"] else " (run still in progress when this card was rendered)") + ".", "",
+              *hunt_section(hunt), ""]
     (HERE / "COST_CARD.md").write_text("\n".join(L))
     print("\n".join(L))
 
