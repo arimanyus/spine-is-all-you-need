@@ -21,11 +21,16 @@ def hunt_section(raw):
          f"({f(base.get('factual_accuracy'))}). Refusal metric: {m['refusal_metric']}; refusal items {len(m.get('sets', {}).get('refusal', []))}, "
          f"factual items {len(m.get('sets', {}).get('factual', []))}. Unsteered refusal {f(base.get('refusal_rate_turn0_crude'))}.", "",
          f"Reproduce: `{m['command']}` (then `steer/.venv/bin/python steer/report.py`).", "",
-         "| arm (ranking_intervention) | smallest unlocking k | neuron ids (layer:neuron) | escalation stopped |", "|---|---|---|---|"]
+         "| arm (ranking_intervention) | smallest unlocking k | neuron ids (layer:neuron) | searched refusal / factual | random refusal rates | random factual (follow-up) | escalation stopped |", "|---|---|---|---|---|---|---|"]
     for arm, u in U.items():
         ids = ", ".join(f"L{n['layer']}:n{n['neuron']}" for n in u.get("neurons", [])) or "-"
         stop = f"k={u['stopped_at_k']} ({u['stop_reason']})" if "stopped_at_k" in u else "no"
-        L.append(f"| {arm} | {u['smallest_k'] if u['smallest_k'] is not None else 'none'} | {ids} | {stop} |")
+        k = u["smallest_k"]
+        pk = u["per_k"].get(str(k), {}) if k is not None else {}
+        sf = raw["conditions"].get(f"{arm}_top{k}", {}).get("summary", {}).get("factual_accuracy") if k is not None else None
+        rf = u.get("random_factual_at_smallest_k")
+        L.append(f"| {arm} | {k if k is not None else 'none'} | {ids} | {f(pk.get('searched_refusal'))} / {f(sf)} | "
+                 f"{', '.join(f(x) for x in pk.get('random_refusal_rates', [])) or '-'} | {', '.join(f(x) for x in rf) if rf else 'not scored'} | {stop} |")
     return L
 
 
