@@ -1,0 +1,435 @@
+{
+ "probes_ref": "research/cursor/steering-probes-clean-5853",
+ "probes_commit": "ee48829074f2781b60be784fece692d9cd2f0012",
+ "refusal_text_available_locally": true,
+ "spine_contrast_vs_pressure_probes": {
+  "n_search": 48,
+  "n_search_with_text": 48,
+  "n_scored": 12,
+  "n_scored_with_text": 12,
+  "search_templates": [
+   "false_premise_search",
+   "memory_rewrite_search"
+  ],
+  "search_families": [
+   "false_premise",
+   "memory_rewrite"
+  ],
+  "scored_with_template_in_search": 0,
+  "scored_with_family_in_search": 12,
+  "shared_ids": [],
+  "shared_source_ids": [],
+  "items": [
+   {
+    "id": "fp-001",
+    "template": "false_premise_stack",
+    "template_in_search": false,
+    "family": "false_premise",
+    "family_in_search": true,
+    "max_token_jaccard": 0.125,
+    "closest_by_tokens": "sc-007-pressured",
+    "max_3gram_jaccard": 0.022,
+    "closest_by_3gram": "sc-006-clean"
+   },
+   {
+    "id": "fp-003",
+    "template": "false_premise_stack",
+    "template_in_search": false,
+    "family": "false_premise",
+    "family_in_search": true,
+    "max_token_jaccard": 0.123,
+    "closest_by_tokens": "sc-012-pressured",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "sc-001-clean"
+   },
+   {
+    "id": "fp-004",
+    "template": "false_premise_stack",
+    "template_in_search": false,
+    "family": "false_premise",
+    "family_in_search": true,
+    "max_token_jaccard": 0.129,
+    "closest_by_tokens": "sc-003-clean",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "sc-001-clean"
+   },
+   {
+    "id": "fp-005",
+    "template": "false_premise_stack",
+    "template_in_search": false,
+    "family": "false_premise",
+    "family_in_search": true,
+    "max_token_jaccard": 0.185,
+    "closest_by_tokens": "sc-006-clean",
+    "max_3gram_jaccard": 0.026,
+    "closest_by_3gram": "sc-006-clean"
+   },
+   {
+    "id": "fp-006",
+    "template": "false_premise_stack",
+    "template_in_search": false,
+    "family": "false_premise",
+    "family_in_search": true,
+    "max_token_jaccard": 0.108,
+    "closest_by_tokens": "sc-008-clean",
+    "max_3gram_jaccard": 0.019,
+    "closest_by_3gram": "sc-024-clean"
+   },
+   {
+    "id": "fp-007",
+    "template": "false_premise_stack",
+    "template_in_search": false,
+    "family": "false_premise",
+    "family_in_search": true,
+    "max_token_jaccard": 0.129,
+    "closest_by_tokens": "sc-003-clean",
+    "max_3gram_jaccard": 0.026,
+    "closest_by_3gram": "sc-006-clean"
+   },
+   {
+    "id": "mr-002",
+    "template": "memory_rewrite",
+    "template_in_search": false,
+    "family": "memory_rewrite",
+    "family_in_search": true,
+    "max_token_jaccard": 0.118,
+    "closest_by_tokens": "sc-003-clean",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "sc-001-clean"
+   },
+   {
+    "id": "mr-003",
+    "template": "memory_rewrite",
+    "template_in_search": false,
+    "family": "memory_rewrite",
+    "family_in_search": true,
+    "max_token_jaccard": 0.148,
+    "closest_by_tokens": "sc-003-clean",
+    "max_3gram_jaccard": 0.03,
+    "closest_by_3gram": "sc-006-clean"
+   },
+   {
+    "id": "mr-004",
+    "template": "memory_rewrite",
+    "template_in_search": false,
+    "family": "memory_rewrite",
+    "family_in_search": true,
+    "max_token_jaccard": 0.175,
+    "closest_by_tokens": "sc-018-pressured",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "sc-001-clean"
+   },
+   {
+    "id": "mr-005",
+    "template": "memory_rewrite",
+    "template_in_search": false,
+    "family": "memory_rewrite",
+    "family_in_search": true,
+    "max_token_jaccard": 0.129,
+    "closest_by_tokens": "sc-002-pressured",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "sc-001-clean"
+   },
+   {
+    "id": "mr-006",
+    "template": "memory_rewrite",
+    "template_in_search": false,
+    "family": "memory_rewrite",
+    "family_in_search": true,
+    "max_token_jaccard": 0.132,
+    "closest_by_tokens": "sc-019-pressured",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "sc-001-clean"
+   },
+   {
+    "id": "mr-007",
+    "template": "memory_rewrite",
+    "template_in_search": false,
+    "family": "memory_rewrite",
+    "family_in_search": true,
+    "max_token_jaccard": 0.15,
+    "closest_by_tokens": "sc-018-clean",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "sc-001-clean"
+   }
+  ]
+ },
+ "contrast_prompts_vs_refusal_probes": {
+  "n_search": 40,
+  "n_search_with_text": 20,
+  "n_scored": 24,
+  "n_scored_with_text": 24,
+  "search_templates": [],
+  "search_families": [],
+  "scored_with_template_in_search": 0,
+  "scored_with_family_in_search": 0,
+  "shared_ids": [],
+  "shared_source_ids": [],
+  "items": [
+   {
+    "id": "tb-001",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.075,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-002",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.089,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-003",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.061,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-004",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.093,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-005",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.028,
+    "closest_by_tokens": "cp-006",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-006",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.054,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-007",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.111,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-008",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.044,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-009",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.135,
+    "closest_by_tokens": "cp-026",
+    "max_3gram_jaccard": 0.024,
+    "closest_by_3gram": "cp-018"
+   },
+   {
+    "id": "tb-010",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.059,
+    "closest_by_tokens": "cp-038",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-011",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.061,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-012",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.081,
+    "closest_by_tokens": "cp-034",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-013",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.161,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-014",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.061,
+    "closest_by_tokens": "cp-034",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-015",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.051,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-016",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.033,
+    "closest_by_tokens": "cp-024",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-017",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.083,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-018",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.108,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-019",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.077,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-020",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.065,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-021",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.079,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-022",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.091,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-023",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.081,
+    "closest_by_tokens": "cp-036",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   },
+   {
+    "id": "tb-024",
+    "template": "tool_bait",
+    "template_in_search": false,
+    "family": "tool_bait",
+    "family_in_search": false,
+    "max_token_jaccard": 0.097,
+    "closest_by_tokens": "cp-030",
+    "max_3gram_jaccard": 0.0,
+    "closest_by_3gram": "cp-002"
+   }
+  ]
+ }
+}

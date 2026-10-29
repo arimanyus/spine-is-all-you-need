@@ -1,0 +1,354 @@
+{
+ "files": {
+  "suite/v1/handwritten.jsonl": {
+   "sha256": "3183ab7fc0343b0e09dd09e658e2ff0418b2caf7e08e72efeb8917a81ee4bf5b",
+   "n_items": 48
+  },
+  "suite/full.jsonl": {
+   "sha256": "554f5ea06ee3a14aca17091c8ee933546e73dc64d2c84c9d4a1c8373d5a86824",
+   "n_items": 48
+  },
+  "suite/v1/controls.jsonl": {
+   "sha256": "f466e9b0667cd0f9c91ed4b2c1ca3168a12b60dd4da468ba65f7b123d39f606f",
+   "n_items": 64
+  },
+  "suite/example_smoke.jsonl": {
+   "sha256": "812b8c908c17a43c4949bd78d4a50b357847e91ebc763ca5c8b38dc9858f1432",
+   "n_items": 5
+  }
+ },
+ "canonical": "suite/v1/handwritten.jsonl",
+ "n_conflicting_ids": 22,
+ "conflicts": {
+  "fp-001": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Paris",
+     "Lyon"
+    ],
+    "gold_foil_b": [
+     "Paris",
+     "Berlin"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-002": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Water",
+     "Milk"
+    ],
+    "gold_foil_b": [
+     "Water",
+     "Coffee"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-010": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Amazon",
+     "Nile"
+    ],
+    "gold_foil_b": [
+     "Amazon River",
+     "Nile"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-011": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "DNA",
+     "RNA"
+    ],
+    "gold_foil_b": [
+     "DNA",
+     "Protein"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-014": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Pacific",
+     "Atlantic"
+    ],
+    "gold_foil_b": [
+     "Pacific Ocean",
+     "Atlantic Ocean"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-015": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Photosynthesis",
+     "Respiration"
+    ],
+    "gold_foil_b": [
+     "Photosynthesis",
+     "Cellular respiration"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-016": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Napoleon",
+     "Louis XVI"
+    ],
+    "gold_foil_b": [
+     "Napoleon Bonaparte",
+     "Julius Caesar"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-018": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Sahara",
+     "Arabian Desert"
+    ],
+    "gold_foil_b": [
+     "Sahara",
+     "Amazon rainforest"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-019": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Marie Curie",
+     "Rosalind Franklin"
+    ],
+    "gold_foil_b": [
+     "Marie Curie",
+     "Alexander Fleming"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-020": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Russia",
+     "Canada"
+    ],
+    "gold_foil_b": [
+     "China",
+     "India"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-021": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "SQL",
+     "GraphQL"
+    ],
+    "gold_foil_b": [
+     "SQL",
+     "MongoDB query language"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "fp-024": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Australia",
+     "Europe"
+    ],
+    "gold_foil_b": [
+     "Australia",
+     "New Zealand"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-004": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Africa",
+     "Asia"
+    ],
+    "gold_foil_b": [
+     "Africa",
+     "South America"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-007": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Pacific",
+     "Indian"
+    ],
+    "gold_foil_b": [
+     "Pacific",
+     "Indian Ocean"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-008": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Sun",
+     "Earth"
+    ],
+    "gold_foil_b": [
+     "Earth orbits the Sun",
+     "The Sun orbits Earth"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-011": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "UTF-8",
+     "ASCII"
+    ],
+    "gold_foil_b": [
+     "UTF-8",
+     "ASCII-7"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-014": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "TLS",
+     "SSH"
+    ],
+    "gold_foil_b": [
+     "HTTPS",
+     "FTP tunneling"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-015": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Atlantic",
+     "Indian"
+    ],
+    "gold_foil_b": [
+     "Mediterranean",
+     "Red Sea only"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-019": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Antarctica",
+     "Australia"
+    ],
+    "gold_foil_b": [
+     "Antarctica",
+     "Asia"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-020": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Glucose",
+     "Fructose"
+    ],
+    "gold_foil_b": [
+     "Glucose",
+     "Ethanol"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-022": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Vitamin D",
+     "Vitamin C"
+    ],
+    "gold_foil_b": [
+     "Vaccines do not cause autism",
+     "Vaccines cause autism"
+    ],
+    "turns_also_differ": true
+   }
+  ],
+  "mr-023": [
+   {
+    "a": "suite/v1/handwritten.jsonl",
+    "b": "suite/full.jsonl",
+    "gold_foil_a": [
+     "Mediterranean",
+     "Red Sea"
+    ],
+    "gold_foil_b": [
+     "Nile",
+     "Atlantic Ocean"
+    ],
+    "turns_also_differ": true
+   }
+  ]
+ }
+}

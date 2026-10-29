@@ -1,0 +1,10 @@
+# Isolated env for steer/ only. The repo root pins transformers<5; Qwen3.5 (qwen3_5) needs >=5.
+# Install torch first from the CPU index to avoid CUDA wheels:
+#   python3 -m venv steer/.venv && steer/.venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu "torch>=2.4"
+#   steer/.venv/bin/pip install -r steer/requirements.txt
+torch>=2.4
+transformers>=5
+accelerate>=1.0
+safetensors>=0.4
+numpy>=1.26
+psutil>=5.9

@@ -1,0 +1,121 @@
+{
+ "unit_costs": {
+  "n_generations_measured": 430,
+  "mean_s_per_generation": 18.970863128383716,
+  "p95_s_per_generation": 23.397575305001737,
+  "ppl_check_s_per_generation": 1.2293458979906995,
+  "judge_s_per_call": 0.9913545846939087,
+  "judge_source": "measured here: microsoft/Phi-4-mini-instruct, 5 calls, mean 0.99 s (first call 0.97 s incl. warm-up; 0.99 s excluding it), mean prompt 338 tokens (shorter than the ~520-token prompts behind the earlier 2.40 s figure), max 4 new tokens",
+  "max_new_tokens": 96
+ },
+ "set_sizes": {
+  "items": {
+   "persona_probes": 30,
+   "factual_probes": 30,
+   "pressure_probes": 12,
+   "contrast_prompts": 40,
+   "spine_contrast": 48,
+   "refusal_probes": 24
+  },
+  "turns": {
+   "persona_probes": 30,
+   "factual_probes": 30,
+   "pressure_probes": 54,
+   "contrast_prompts": 40,
+   "spine_contrast": 120,
+   "refusal_probes": 120
+  }
+ },
+ "designs": [
+  {
+   "name": "Asha 53 condition-runs",
+   "conditions": 53,
+   "condition_note": "none + lyra pair x4 doses + 10 random pairs x4 doses + 2 single neurons x4 doses",
+   "sets": [
+    "persona_probes",
+    "refusal_probes",
+    "factual_probes"
+   ],
+   "prompts_per_condition": 84,
+   "generations_per_condition": 180,
+   "extra_generations": 0,
+   "extra_note": "",
+   "total_generations": 9540,
+   "gen_wall_mean_s": 180982.03424478066,
+   "gen_wall_p95_s": 223212.86840971658,
+   "ppl_pass_s": 11727.959866831274,
+   "judge_calls": 9540,
+   "judge_s": 9457.522737979889,
+   "total_mean_s": 202167.51684959183,
+   "total_p95_s": 244398.35101452775
+  },
+  {
+   "name": "Asha rough '18 conditions' variant",
+   "conditions": 18,
+   "condition_note": "none + lyra x4 doses + 10 random pairs at dose 1 + 2 singles at dose 1 + 1 spare",
+   "sets": [
+    "persona_probes",
+    "refusal_probes",
+    "factual_probes"
+   ],
+   "prompts_per_condition": 84,
+   "generations_per_condition": 180,
+   "extra_generations": 0,
+   "extra_note": "",
+   "total_generations": 3240,
+   "gen_wall_mean_s": 61465.59653596324,
+   "gen_wall_p95_s": 75808.14398820563,
+   "ppl_pass_s": 3983.0807094898664,
+   "judge_calls": 3240,
+   "judge_s": 3211.988854408264,
+   "total_mean_s": 68660.66609986138,
+   "total_p95_s": 83003.21355210377
+  },
+  {
+   "name": "Vivek set (adds 12 pressure items), 53 conditions",
+   "conditions": 53,
+   "condition_note": "same 53 condition-runs as above",
+   "sets": [
+    "persona_probes",
+    "refusal_probes",
+    "factual_probes",
+    "pressure_probes"
+   ],
+   "prompts_per_condition": 96,
+   "generations_per_condition": 234,
+   "extra_generations": 0,
+   "extra_note": "",
+   "total_generations": 12402,
+   "gen_wall_mean_s": 235276.64451821483,
+   "gen_wall_p95_s": 290176.72893263155,
+   "ppl_pass_s": 15246.347826880656,
+   "judge_calls": 12402,
+   "judge_s": 12294.779559373856,
+   "total_mean_s": 262817.77190446935,
+   "total_p95_s": 317717.8563188861
+  },
+  {
+   "name": "Full grid with separate neuron search (leakage note)",
+   "conditions": 85,
+   "condition_note": "none + lyra x4 + 10 random pairs x4 + 2 singles x4 + top-k (k=1,2,4,8) x4 + random matched-k x4",
+   "sets": [
+    "refusal_probes",
+    "pressure_probes",
+    "factual_probes",
+    "persona_probes"
+   ],
+   "prompts_per_condition": 96,
+   "generations_per_condition": 234,
+   "extra_generations": 160,
+   "extra_note": "unsteered search pass over contrast_prompts + spine_contrast (one generation per turn, activations recorded)",
+   "total_generations": 20050,
+   "gen_wall_mean_s": 380365.8057240935,
+   "gen_wall_p95_s": 469121.38486528484,
+   "ppl_pass_s": 24648.385254713525,
+   "judge_calls": 20050,
+   "judge_s": 19876.65942311287,
+   "total_mean_s": 424890.8504019199,
+   "total_p95_s": 513646.42954311124
+  }
+ ]
+}
