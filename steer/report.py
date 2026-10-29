@@ -165,9 +165,61 @@ def dose():
     print("\n".join(L[:30]))
 
 
+def equiv_section(raw):
+    """Markdown lines on the neuron-explorer hook/dose equivalence (shared with cost_card.py)."""
+    L = [f"Hook and dose units vs `{raw['meta']['explorer_repo']}` ({raw['meta']['adapted_from']}):", "",
+         "| layer:neuron | greedy agree input-hook vs output-column | fp32 rel err (input vs output formula) | added MLP-out norm | dose-1 target (resid_p50) |",
+         "|---|---|---|---|---|"]
+    for h in raw["hook_equivalence"]:
+        L.append(f"| L{h['layer']}:n{h['neuron']} | {h['greedy_agree_input_vs_output_hook']}/{h['n_new']} | "
+                 f"{h['rel_err_inputformula_vs_outputformula_fp32']:.1e} | {h['added_vec_norm']:.2f} | {h['target_norm_dose1_x_resid']:.2f} |")
+    L += ["", "Dose units: our `steer.py` dose equals explorer's `--dose-unit rel` dose and their recorded `rel_push` — "
+          "`add_to_activation = dose * resid_p50[L] / ||W_down[L][:, n]||`, so the added MLP-output vector has norm "
+          "`dose * resid_p50[L]` (a fixed fraction `dose` of the median residual norm leaving layer L). Their absmax dose "
+          "for the same push is `dose * resid_p50[L] / (||W_down[L][:, n]|| * abs_max[L, n])` (abs_max from their "
+          "`act_scale.npz`). steer_index / connections were built at rel dose 0.8. Per-neuron conversions:", "",
+          "| layer:neuron | our dose (rel) | add to activation | explorer rel_push | explorer dose (absmax) |", "|---|---|---|---|---|"]
+    for d in raw["dose_conversion"]:
+        L.append(f"| L{d['layer']}:n{d['neuron']} | {d['our_dose_rel']} | {d['add_to_activation']:.2f} | {d['explorer_rel_push']:.2f} | {d['explorer_dose_absmax']:.2f} |")
+    return L
+
+
+def explorer():
+    """Render steer/EXPLORER.md from raw_explorer_equiv.json + raw_explorer.json."""
+    L = ["# neuron-explorer (MIT) cross-check", ""]
+    if (HERE / "raw_explorer_equiv.json").exists():
+        L += ["## Hook / dose equivalence", "", *equiv_section(json.loads((HERE / "raw_explorer_equiv.json").read_text())), ""]
+    if (HERE / "raw_explorer.json").exists():
+        raw = json.loads((HERE / "raw_explorer.json").read_text())
+        m, C, U, lists = raw["meta"], raw["conditions"], raw["unlock"], raw["candidate_lists"]
+        base = C.get("none", {}).get("summary", {})
+        L += [f"## Candidate-list test (started {m['started_utc']}" + (f", finished {m['finished_utc']}" if "finished_utc" in m else " — in progress") + ")", "",
+              f"Zero-ablate / negative-steer top-k (k in {m['ks']}) vs {m['n_random_draws']} matched random draws; unlock = refusal below "
+              f"the random {m['random_percentile']}th pct with factual within {int(m['factual_gate_drop'] * 100)} pts of unsteered ({f(base.get('factual_accuracy'))}). "
+              f"Unsteered refusal {f(base.get('refusal_rate_turn0_crude'))}. Lists are hints only (persona-sweep provenance).", ""]
+        if raw["failures"]:
+            L += ["Failures / skips:", *[f"- {x}" for x in raw["failures"]], ""]
+        for name, lst in lists.items():
+            head = ", ".join(f"L{c['layer']}:n{c['neuron']}" for c in lst["candidates"][:12])
+            L.append(f"- **{name}** ({lst['source']}, {len(lst['candidates'])} neurons): {head}{' ...' if len(lst['candidates']) > 12 else ''}")
+        L += ["", "### Unlock summary", "",
+              "| arm | smallest unlocking k | neuron ids | escalation |", "|---|---|---|---|"]
+        for arm, u in U.items():
+            ids = ", ".join(f"L{n['layer']}:n{n['neuron']}" for n in u.get("neurons", [])) or "-"
+            L.append(f"| {arm} | {u['smallest_k'] if u['smallest_k'] is not None else 'none'} | {ids} | {u.get('stop_reason', 'full sweep')} |")
+        L += ["", "### Per-k", "", "| arm | k | searched refusal | random rates | random p20 | factual | within 10 pts | unlocked |", "|---|---|---|---|---|---|---|---|"]
+        for arm, u in U.items():
+            for k, v in u["per_k"].items():
+                L.append(f"| {arm} | {k} | {f(v['searched_refusal'])} | {', '.join(f(x) for x in v['random_refusal_rates'])} | {f(v['random_p20'])} | {f(v['factual'])} | {v['factual_within_10pts']} | **{v['unlocked']}** |")
+    (HERE / "EXPLORER.md").write_text("\n".join(L) + "\n")
+    print("\n".join(L[:40]))
+
+
 if __name__ == "__main__":
     main()
     if (HERE / "raw_shortlist.json").exists():
         shortlist()
     if (HERE / "raw_dose.json").exists():
         dose()
+    if (HERE / "raw_explorer_equiv.json").exists() or (HERE / "raw_explorer.json").exists():
+        explorer()

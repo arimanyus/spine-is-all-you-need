@@ -215,6 +215,18 @@ def main():
               f"{len(dz['conditions'])} scored conditions, {wall / 3600:.1f} h wall time, peak RSS {dz['peak_rss_gb']:.2f} GB"
               + ("" if "finished_utc" in dz["meta"] else " (run still in progress when this card was rendered)") + ".", "",
               *dose_section(dz), ""]
+    if (HERE / "raw_explorer_equiv.json").exists():
+        from report import equiv_section
+        L += ["## neuron-explorer dose/hook conversion (see `EXPLORER.md`)", "", *equiv_section(json.loads((HERE / "raw_explorer_equiv.json").read_text())), ""]
+    if (HERE / "raw_explorer.json").exists():
+        ex = json.loads((HERE / "raw_explorer.json").read_text())
+        wall = sum(c["wall_s"] for c in ex["conditions"].values())
+        unlocked = [a for a, u in ex["unlock"].items() if u["smallest_k"] is not None]
+        L += ["## neuron-explorer candidate-list test (see `EXPLORER.md`, `raw_explorer.json`)", "",
+              f"{len(ex['conditions'])} scored conditions, {wall / 3600:.1f} h wall time, peak RSS {ex['peak_rss_gb']:.2f} GB"
+              + ("" if "finished_utc" in ex["meta"] else " (in progress when rendered)")
+              + f". Lists: " + ", ".join(f"{n} ({len(l['candidates'])})" for n, l in ex["candidate_lists"].items())
+              + f". Unlocked arms: {', '.join(unlocked) if unlocked else 'none'}.", ""]
     (HERE / "COST_CARD.md").write_text("\n".join(L))
     print("\n".join(L))
 
