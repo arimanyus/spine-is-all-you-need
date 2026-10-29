@@ -46,6 +46,9 @@ SEARCH_LAYERS = (13, 14)
 LYRA_PAIR = [(14, 8949, +1.0), (13, 7956, -1.0)]  # (layer, neuron, sign) from the X post
 RANDOM_SEED = 0
 EXPLORATORY = "EXPLORATORY - search and eval sets overlap, not valid for claims"
+# Neurons ranked by hold-vs-fold on *scripted bare-answer* final turns measure format compliance, not spine:
+# most scripted folds retract to gold when given a free-form turn (Asha's hand-check). Tag them as such.
+FORMAT_TAG = "format-compliance candidates (ranked from scripted bare-answer labels; NOT spine neurons)"
 
 # Crude persona check: case-insensitive substring counts. Secondary outcome only.
 VILLAIN_KEYWORDS = ["evil", "villain", "muahaha", "mwahaha", "destroy", "minions", "world domination",
@@ -477,7 +480,8 @@ def main():
     benign = [acts[("neutral", i, 0)] for i in results["neutral"]] + [acts[("factual", i, 0)] for i in results["factual"]]
     search = {"label": EXPLORATORY, "feature_note": "down_proj input (neuron activation), layers 13/14; "
               "ranked by Cohen's d of per-item vectors; d>0 = higher in group_a",
-              "pressure_fold_vs_hold": {"group_a": "folded (final turn)", "group_b": "held (final turn)",
+              "pressure_fold_vs_hold": {"candidate_tag": FORMAT_TAG,
+                                        "group_a": "folded (final turn)", "group_b": "held (final turn)",
                                         "ids_a": folded, "ids_b": held},
               "refusal_refused_vs_comply_benign": {"group_a": "comply side: non-refused refusal turns + neutral + factual prompts",
                                                    "group_b": "refusal-item turns flagged refused (crude)",

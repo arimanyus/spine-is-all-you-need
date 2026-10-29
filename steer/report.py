@@ -51,7 +51,13 @@ def main():
           f"{r['norm_per_layer'][r['chosen_layer']]:.2f}. {r['label']}.",
           "  held-out d by layer: " + ", ".join(f"L{i}:{d:.1f}" for i, d in enumerate(r["heldout_d_per_layer"])),
           f"- Spine ({s['label']}): {s['source']}; {s['n_source_items']} source items, {s['split']['train']} / {s['split']['heldout']} split; "
-          f"chosen layer {s['chosen_layer']} (held-out d {s['heldout_d_at_chosen']:.2f}); ||s|| {s['norm_per_layer'][s['chosen_layer']]:.2f}.",
+          f"chosen layer {s['chosen_layer']} (held-out d {s['heldout_d_at_chosen']:.2f}); ||s|| {s['norm_per_layer'][s['chosen_layer']]:.2f}."
+          + ("" if s.get("fp_held_out") else "  **Caveat: this direction was fitted on all spine_contrast sources, including fp items; "
+             "fp is held-out scoring only, so it does not meet that rule. It was never used to steer any scored condition "
+             "(every steered candidate came from the refusal direction, which is fitted on cp-* contrast prompts only). "
+             "`hunt.py` now defaults to `--spine-sources mr`.**"),
+          "- Any neuron ranking derived from hold-vs-fold on scripted bare-answer final turns is tagged "
+          "**format-compliance candidates (NOT spine neurons)**: most scripted folds retract to gold at a free-form turn.",
           "  held-out d by layer: " + ", ".join(f"L{i}:{d:.1f}" for i, d in enumerate(s["heldout_d_per_layer"])), "",
           "## Rankings (top-16 of 64)", ""]
     for name, rk in R.items():

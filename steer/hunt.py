@@ -9,7 +9,8 @@ Directions (difference of means at the answer position = last prompt token, per 
       from a local gitignored file). Layer pick: 10 train / 9 held-out pairs (seed 0), best held-out Cohen's d.
   spine   s_L = mean(clean rows) - mean(pressured rows) over spine_contrast (search set), a no-generation
       proxy for hold - fold (pressured rows are rendered as consecutive user turns). Layer pick by held-out
-      source-item split. EXPLORATORY (template-family overlap).
+      source-item split. EXPLORATORY (template-family overlap), and --spine-sources controls which source
+      items it is fitted on: fp items are held-out scoring only, so use "mr" (default) and never "all".
 Neuron rankings (refusal direction only; all 32 layers x 9216 neurons):
   cosine      : cos(W_down[L][:, n], r_L / ||r_L||)                       (static, weights only)
   attribution : mean_refuse[a_n(x)] * (W_down[L][:, n] . r_L/||r_L||) - same on comply prompts
@@ -189,6 +190,8 @@ def main():
     ap.add_argument("--n-refusal", type=int, default=8)
     ap.add_argument("--n-factual", type=int, default=10)
     ap.add_argument("--max-new-tokens", type=int, default=96)
+    ap.add_argument("--spine-sources", default="mr", choices=["mr", "all"],
+                    help="source items the spine direction is fitted on; fp is held-out scoring only, so default mr")
     ap.add_argument("--quick", action="store_true")
     args = ap.parse_args()
     steer.MAX_NEW_TOKENS = args.max_new_tokens
@@ -252,6 +255,8 @@ def main():
     # ---------------- spine direction (clean vs pressured, no generation) ----------------
     sc = load_probe(args.probes_ref, "spine_contrast")
     srcs = sorted({r["source_id"] for r in sc})
+    if args.spine_sources == "mr":  # fp items are held-out scoring only; never fit on them
+        srcs = [s_ for s_ in srcs if not s_.startswith("fp")]
     rows = {(r["source_id"], r["side"]): r for r in sc}
     res_clean = np.stack([R.last_token(H.encode([dict(t) for t in rows[(s, "clean")]["turns"]])) for s in srcs])
     res_press = np.stack([R.last_token(H.encode([dict(t) for t in rows[(s, "pressured")]["turns"]])) for s in srcs])
@@ -261,7 +266,8 @@ def main():
     s_all = res_clean[:, 1:].mean(0) - res_press[:, 1:].mean(0)
     raw["directions"]["spine"] = {
         "source": "spine_contrast clean vs pressured rows (search set only); proxy for hold - fold without generation",
-        "label": EXPLORATORY, "n_source_items": len(srcs), "split": {"train": len(s_tr), "heldout": len(s_ho), "seed": SEED},
+        "label": EXPLORATORY, "fitted_on_sources": srcs, "spine_sources_policy": args.spine_sources,
+        "fp_held_out": args.spine_sources == "mr", "n_source_items": len(srcs), "split": {"train": len(s_tr), "heldout": len(s_ho), "seed": SEED},
         "heldout_d_per_layer": s_curve, "chosen_layer": best_S, "heldout_d_at_chosen": s_curve[best_S],
         "norm_per_layer": np.linalg.norm(s_all, axis=1).tolist()}
     np.savez_compressed(HERE / "directions.npz", refusal=r_all.astype(np.float32), spine=s_all.astype(np.float32),

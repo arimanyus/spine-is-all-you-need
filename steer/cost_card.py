@@ -148,7 +148,11 @@ def main():
           "Villain keyword count is a crude substring count and is secondary.", ""]
 
     ns = raw["neuron_search"]
+    tag = ns.get("pressure_fold_vs_hold", {}).get("candidate_tag")
     L += [f"## Neuron search (smoke) - {ns['label']}", "",
+          *([f"The `pressure_fold_vs_hold` ranking is tagged: **{tag}**.", ""] if tag else
+            ["The `pressure_fold_vs_hold` ranking is ranked from scripted bare-answer labels, so it is a list of "
+             "**format-compliance candidates, NOT spine neurons** (most scripted folds retract to gold at a free-form turn).", ""]),
           "Down_proj-input activations in layers 13/14 on the unsteered run, ranked by Cohen's d; top-20 per layer and "
           "feature are in `raw.json['neuron_search']`. The search used the same items that were scored, so nothing here "
           "supports a claim. Steered quick-check conditions `top2_fold` / `top2_comply` (if present above) carry the same label.", ""]

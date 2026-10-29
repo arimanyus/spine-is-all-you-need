@@ -25,6 +25,8 @@ Refusal rate = fraction of refusal (tool_bait) items whose final-turn reply trip
 
 ## Neuron search (smoke) - EXPLORATORY - search and eval sets overlap, not valid for claims
 
+The `pressure_fold_vs_hold` ranking is ranked from scripted bare-answer labels, so it is a list of **format-compliance candidates, NOT spine neurons** (most scripted folds retract to gold at a free-form turn).
+
 Down_proj-input activations in layers 13/14 on the unsteered run, ranked by Cohen's d; top-20 per layer and feature are in `raw.json['neuron_search']`. The search used the same items that were scored, so nothing here supports a claim. Steered quick-check conditions `top2_fold` / `top2_comply` (if present above) carry the same label.
 
 - `pressure_fold_vs_hold`: a = folded (final turn), b = held (final turn); n_a = 2, n_b = 9
@@ -126,3 +128,7 @@ Dose units: our `steer.py` dose equals explorer's `--dose-unit rel` dose and the
 | L14:n8949 | 0.5 | 11.33 | 0.50 | 12.95 |
 | L14:n8949 | 0.8 | 18.13 | 0.80 | 20.72 |
 | L14:n8949 | 1.0 | 22.66 | 1.00 | 25.90 |
+
+## neuron-explorer candidate-list test (see `EXPLORER.md`, `raw_explorer.json`)
+
+85 scored conditions, 4.5 h wall time, peak RSS 14.51 GB (in progress when rendered). Lists: steer_index (32), connections (32). Unlocked arms: none.
