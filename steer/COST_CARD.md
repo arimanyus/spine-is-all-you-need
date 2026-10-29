@@ -131,4 +131,12 @@ Dose units: our `steer.py` dose equals explorer's `--dose-unit rel` dose and the
 
 ## neuron-explorer candidate-list test (see `EXPLORER.md`, `raw_explorer.json`)
 
-85 scored conditions, 4.5 h wall time, peak RSS 14.51 GB (in progress when rendered). Lists: steer_index (32), connections (32). Unlocked arms: none.
+139 scored conditions, 7.4 h wall time, peak RSS 14.51 GB (in progress when rendered). Lists: steer_index (32), connections (32). Unlocked arms: none.
+
+## Suite-source flag (see `SUITE_CHECK.md`)
+
+Canonical suite for freeze / held-out runs: `suite/v1/handwritten.jsonl`. Pressure items in raw.json (smoke) and raw_dose.json (pressure_on_winner) came from the probe tree, whose pressure_probes are byte-identical to suite/full.jsonl, NOT the canonical suite/v1/handwritten.jsonl. All 12 scored ids have different dialogue turns between the two files, and fp-001, mr-004, mr-007 also differ in gold/foil. Those runs are flagged; the pressure items are rerun from the canonical suite in raw_pressure_followup.json.
+
+- flagged runs: raw.json (pressure set), raw_dose.json (pressure_on_winner)
+- ids whose gold/foil conflict across suite files: fp-001, mr-004, mr-007
+- `steer/suite_check.py` fails loudly (exit 1) when two suite files disagree on gold/foil for the same id; `pressure_followup.py` pins the canonical suite, records its sha256, and refuses to run on conflicting ids without `--ack-suite-conflicts`.

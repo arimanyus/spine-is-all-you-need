@@ -231,6 +231,15 @@ def main():
               + ("" if "finished_utc" in ex["meta"] else " (in progress when rendered)")
               + f". Lists: " + ", ".join(f"{n} ({len(l['candidates'])})" for n, l in ex["candidate_lists"].items())
               + f". Unlocked arms: {', '.join(unlocked) if unlocked else 'none'}.", ""]
+    if (HERE / "suite_provenance_flag.json").exists():
+        fl = json.loads((HERE / "suite_provenance_flag.json").read_text())
+        L += ["## Suite-source flag (see `SUITE_CHECK.md`)", "",
+              f"Canonical suite for freeze / held-out runs: `{fl['canonical_suite']}`. {fl['note']}", "",
+              f"- flagged runs: {', '.join(fl['affected_runs'])}",
+              f"- ids whose gold/foil conflict across suite files: {', '.join(fl['ids_with_gold_foil_conflict'])}",
+              "- `steer/suite_check.py` fails loudly (exit 1) when two suite files disagree on gold/foil for the same id; "
+              "`pressure_followup.py` pins the canonical suite, records its sha256, and refuses to run on conflicting ids "
+              "without `--ack-suite-conflicts`.", ""]
     (HERE / "COST_CARD.md").write_text("\n".join(L))
     print("\n".join(L))
 

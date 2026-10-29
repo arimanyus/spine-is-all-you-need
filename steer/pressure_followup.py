@@ -12,6 +12,9 @@ Per item: play the scripted turns, score the scripted final turn, then append ON
   scripted_fold   = spine_label == "fold" at the scripted final turn t4         (PRIMARY)
   free_form_fold  = spine_label == "fold" at the free-form turn t5              (secondary, every arm)
   persistent_fold = fold at t4 AND still fold at t5                             (secondary, format-free read)
+Pressure items are loaded from the pinned suite (default suite/v1/handwritten.jsonl, the canonical source for
+freeze / held-out runs); the path and its sha256 are recorded, and the harness fails loudly if any scored id has
+a gold/foil conflict with another suite file unless --ack-suite-conflicts is given (conflicts are then recorded).
 fp items are held-out scoring only: nothing here is fitted, and no fp item (or fp-021, which is in neither
 the scored nor any search set) is used to build candidates.
 Conditions: unsteered, the dose-sweep winner (from raw_dose.json), and 10 random k-sets of matched size
@@ -40,6 +43,7 @@ sys.path.insert(0, str(HERE)); sys.path.insert(0, str(HERE.parent))
 import steer  # noqa: E402
 from steer import EXPLORATORY, MODEL_ID, PROBES_REF, REVISION, Harness, load_probe, materialize, rss_gb, timing  # noqa: E402
 from hunt import Neurons, NoOp  # noqa: E402
+from suite_check import CANONICAL, load_suite  # noqa: E402
 from scorers.spine import FLIP, holds, normalize, spine_label  # noqa: E402
 
 SEED = 0
@@ -69,6 +73,9 @@ def main():
     ap.add_argument("--calib", default=str(HERE / "calib_norms.json"))
     ap.add_argument("--dose", default=str(HERE / "raw_dose.json"), help="winner condition comes from here")
     ap.add_argument("--out", default=str(HERE / "raw_pressure_followup.json"))
+    ap.add_argument("--suite", default=str(CANONICAL), help="canonical suite file for scored pressure items")
+    ap.add_argument("--ack-suite-conflicts", action="store_true",
+                    help="proceed despite cross-file gold/foil conflicts (they are recorded in the output)")
     ap.add_argument("--n-pressure", type=int, default=12)
     ap.add_argument("--n-factual", type=int, default=10)
     ap.add_argument("--n-random", type=int, default=N_RANDOM)
@@ -87,7 +94,15 @@ def main():
     H = Harness(model, tok)
     H.resid_median = json.loads(Path(args.calib).read_text())["median_resid_norm"]
     n_inter = model.config.intermediate_size
-    pressure = load_probe(args.probes_ref, "pressure_probes")[:2 if q else args.n_pressure]
+    # held-out scored ids come from the probe tree; the ITEMS come from the pinned suite file
+    ids = [r["id"] for r in load_probe(args.probes_ref, "pressure_probes")][:2 if q else args.n_pressure]
+    suite_items, suite_sha, suite_report = load_suite(args.suite, ids, ack_conflicts=args.ack_suite_conflicts)
+    pressure = []
+    for i in ids:
+        it = dict(suite_items[i])
+        it["turns"] = [t if isinstance(t, dict) else {"role": "user", "content": t} for t in it["turns"]]
+        it.setdefault("gold_logprob_target", it["gold"])
+        pressure.append(it)
     factual = load_probe(args.probes_ref, "factual_probes")[:2 if q else args.n_factual]
     dose_raw = json.loads(Path(args.dose).read_text())
     w = dose_raw["winner"]
@@ -101,6 +116,11 @@ def main():
                     "winner_from": {"file": Path(args.dose).name, "condition": w["condition"], "intervention": win_kind, "dose": win_dose,
                                     "neurons": w["neurons"], "sha256": hashlib.sha256(Path(args.dose).read_bytes()).hexdigest()},
                     "sets": {"pressure": [r["id"] for r in pressure], "factual": [r["id"] for r in factual]},
+                    "suite": {"path": args.suite, "sha256": suite_sha, "canonical": str(CANONICAL),
+                              "ack_suite_conflicts": args.ack_suite_conflicts,
+                              "conflicting_scored_ids": sorted(suite_report["conflicts"]),
+                              "n_conflicting_scored_ids": suite_report["n_conflicting_ids"],
+                              "all_suite_files": suite_report["files"], "conflict_detail": suite_report["conflicts"]},
                     "n_random_ksets": n_random, "label": EXPLORATORY,
                     "metrics": {"scripted_fold": "spine_label == fold at the scripted final turn t4 (PRIMARY)",
                                 "free_form_fold": "spine_label == fold at the free-form turn t5 (secondary, reported for every arm)",
