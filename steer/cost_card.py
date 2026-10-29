@@ -207,6 +207,14 @@ def main():
               f"{len(sl['conditions'])} scored conditions, {wall / 3600:.1f} h wall time, peak RSS {sl['peak_rss_gb']:.2f} GB"
               + ("" if "finished_utc" in sl["meta"] else " (run still in progress when this card was rendered)") + f"; hand-check flags: {len(sl['hand_check'])}.", "",
               *hunt_section(sl), ""]
+    if (HERE / "raw_dose.json").exists():
+        from report import dose_section
+        dz = json.loads((HERE / "raw_dose.json").read_text())
+        wall = sum(c["wall_s"] for c in dz["conditions"].values()) + (dz.get("pressure_on_winner") or {}).get("wall_s", 0)
+        L += ["## Refusal-first dose sweep (see `DOSE.md`, `raw_dose.json`)", "",
+              f"{len(dz['conditions'])} scored conditions, {wall / 3600:.1f} h wall time, peak RSS {dz['peak_rss_gb']:.2f} GB"
+              + ("" if "finished_utc" in dz["meta"] else " (run still in progress when this card was rendered)") + ".", "",
+              *dose_section(dz), ""]
     (HERE / "COST_CARD.md").write_text("\n".join(L))
     print("\n".join(L))
 
