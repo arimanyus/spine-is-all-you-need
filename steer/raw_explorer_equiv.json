@@ -1,0 +1,168 @@
+{
+ "meta": {
+  "model_id": "Qwen/Qwen3.5-4B",
+  "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "dtype": "bfloat16",
+  "device": "cpu",
+  "explorer_repo": "https://github.com/lyramakesmusic/neuron-explorer (MIT)",
+  "adapted_from": "sweep/check_equivalence.py (HF path only; vLLM and capture checks skipped)",
+  "act_scale_sha256": "eb2137560c033832075d285bfe6eafa34812a475c67312b50b76896a5a0b8b6e",
+  "calib": "/workspace/steer/calib_norms.json",
+  "prompt": "Who are you?",
+  "new_tokens": 16,
+  "started_utc": "2026-10-29T13:47:48Z",
+  "finished_utc": "2026-10-29T13:48:15Z"
+ },
+ "hook_equivalence": [
+  {
+   "layer": 10,
+   "neuron": 3551,
+   "dose": 1.0,
+   "add_to_activation": 21.48150450096769,
+   "down_col_norm": 0.432702898979187,
+   "greedy_agree_input_vs_output_hook": 16,
+   "n_new": 16,
+   "greedy_agree_input_vs_unsteered": 2,
+   "added_vec_norm": 9.295110702514648,
+   "target_norm_dose1_x_resid": 9.295109272003174,
+   "rel_err_inputformula_vs_outputformula_fp32": 4.0700840031604457e-07
+  },
+  {
+   "layer": 13,
+   "neuron": 7956,
+   "dose": 1.0,
+   "add_to_activation": 22.421953739016484,
+   "down_col_norm": 0.4182724356651306,
+   "greedy_agree_input_vs_output_hook": 15,
+   "n_new": 16,
+   "greedy_agree_input_vs_unsteered": 1,
+   "added_vec_norm": 9.378486633300781,
+   "target_norm_dose1_x_resid": 9.378485202789307,
+   "rel_err_inputformula_vs_outputformula_fp32": 2.0451469140425615e-07
+  },
+  {
+   "layer": 14,
+   "neuron": 8949,
+   "dose": 1.0,
+   "add_to_activation": 22.661510874805053,
+   "down_col_norm": 0.46471765637397766,
+   "greedy_agree_input_vs_output_hook": 16,
+   "n_new": 16,
+   "greedy_agree_input_vs_unsteered": 10,
+   "added_vec_norm": 10.531208038330078,
+   "target_norm_dose1_x_resid": 10.531204223632812,
+   "rel_err_inputformula_vs_outputformula_fp32": 1.2472884236558457e-07
+  }
+ ],
+ "dose_conversion": [
+  {
+   "layer": 10,
+   "neuron": 3551,
+   "our_dose_rel": 0.5,
+   "add_to_activation": 10.740752250483846,
+   "added_mlp_out_norm": 4.647554636001587,
+   "fraction_of_resid_p50": 0.5,
+   "explorer_rel_push": 0.5,
+   "explorer_dose_absmax": 9.681804845506566,
+   "abs_max": 1.109375,
+   "resid_p50_mine": 9.295109272003174
+  },
+  {
+   "layer": 10,
+   "neuron": 3551,
+   "our_dose_rel": 0.8,
+   "add_to_activation": 17.185203600774155,
+   "added_mlp_out_norm": 7.43608741760254,
+   "fraction_of_resid_p50": 0.8,
+   "explorer_rel_push": 0.8,
+   "explorer_dose_absmax": 15.490887752810506,
+   "abs_max": 1.109375,
+   "resid_p50_mine": 9.295109272003174
+  },
+  {
+   "layer": 10,
+   "neuron": 3551,
+   "our_dose_rel": 1.0,
+   "add_to_activation": 21.48150450096769,
+   "added_mlp_out_norm": 9.295109272003174,
+   "fraction_of_resid_p50": 1.0,
+   "explorer_rel_push": 1.0,
+   "explorer_dose_absmax": 19.36360969101313,
+   "abs_max": 1.109375,
+   "resid_p50_mine": 9.295109272003174
+  },
+  {
+   "layer": 13,
+   "neuron": 7956,
+   "our_dose_rel": 0.5,
+   "add_to_activation": 11.210976869508242,
+   "added_mlp_out_norm": 4.689242601394653,
+   "fraction_of_resid_p50": 0.5,
+   "explorer_rel_push": 0.5,
+   "explorer_dose_absmax": 9.566700261980367,
+   "abs_max": 1.171875,
+   "resid_p50_mine": 9.378485202789307
+  },
+  {
+   "layer": 13,
+   "neuron": 7956,
+   "our_dose_rel": 0.8,
+   "add_to_activation": 17.937562991213188,
+   "added_mlp_out_norm": 7.502788162231446,
+   "fraction_of_resid_p50": 0.8,
+   "explorer_rel_push": 0.8,
+   "explorer_dose_absmax": 15.306720419168586,
+   "abs_max": 1.171875,
+   "resid_p50_mine": 9.378485202789307
+  },
+  {
+   "layer": 13,
+   "neuron": 7956,
+   "our_dose_rel": 1.0,
+   "add_to_activation": 22.421953739016484,
+   "added_mlp_out_norm": 9.378485202789307,
+   "fraction_of_resid_p50": 1.0,
+   "explorer_rel_push": 1.0,
+   "explorer_dose_absmax": 19.133400523960734,
+   "abs_max": 1.171875,
+   "resid_p50_mine": 9.378485202789307
+  },
+  {
+   "layer": 14,
+   "neuron": 8949,
+   "our_dose_rel": 0.5,
+   "add_to_activation": 11.330755437402527,
+   "added_mlp_out_norm": 5.265602111816406,
+   "fraction_of_resid_p50": 0.5,
+   "explorer_rel_push": 0.5,
+   "explorer_dose_absmax": 12.949434785602888,
+   "abs_max": 0.875,
+   "resid_p50_mine": 10.531204223632812
+  },
+  {
+   "layer": 14,
+   "neuron": 8949,
+   "our_dose_rel": 0.8,
+   "add_to_activation": 18.129208699844042,
+   "added_mlp_out_norm": 8.42496337890625,
+   "fraction_of_resid_p50": 0.8,
+   "explorer_rel_push": 0.8,
+   "explorer_dose_absmax": 20.71909565696462,
+   "abs_max": 0.875,
+   "resid_p50_mine": 10.531204223632812
+  },
+  {
+   "layer": 14,
+   "neuron": 8949,
+   "our_dose_rel": 1.0,
+   "add_to_activation": 22.661510874805053,
+   "added_mlp_out_norm": 10.531204223632812,
+   "fraction_of_resid_p50": 1.0,
+   "explorer_rel_push": 1.0,
+   "explorer_dose_absmax": 25.898869571205775,
+   "abs_max": 0.875,
+   "resid_p50_mine": 10.531204223632812
+  }
+ ],
+ "note": "our steer.py dose == explorer rel dose (--dose-unit rel) == explorer rel_push; steer_index/connections were built at rel dose 0.8"
+}
